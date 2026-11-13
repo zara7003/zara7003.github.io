@@ -207,22 +207,32 @@
     p.className = on ? 'sound-prompt' : 'sound-prompt hidden';
   }
 
+  var cueInFlight = false;
+
+  function cueOk() { cueInFlight = false; cuePlaying = true; cueBlocked = false; showSoundPrompt(false); }
+  function cueFail(name) {
+    cueInFlight = false; cuePlaying = false; cueBlocked = true;
+    showSoundPrompt(true);
+    cueQueue.unshift(name);
+  }
+
   function pumpCues() {
-    if (cuePlaying || cueQueue.length === 0) { return; }
+    if (cuePlaying || cueInFlight || cueQueue.length === 0) { return; }
     var name = cueQueue.shift();
     if (!voiceOn || !CUE_FILES[name]) { pumpCues(); return; }
+    cueInFlight = true;
     try {
       cueAudio.src = CUE_FILES[name] + CUE_VER;
       var pr = cueAudio.play();
       if (pr && pr.then) {
-        pr.then(function () { cuePlaying = true; cueBlocked = false; showSoundPrompt(false); })
-          .catch(function () { cuePlaying = false; cueBlocked = true; showSoundPrompt(true); cueQueue.unshift(name); });
-      } else { cuePlaying = true; }
-    } catch (e) { cuePlaying = false; }
+        pr.then(function () { cueOk(); }).catch(function () { cueFail(name); });
+      } else { cueOk(); }
+    } catch (e) { cueFail(name); }
   }
 
-  cueAudio.onended = function () { cuePlaying = false; pumpCues(); };
-  cueAudio.onerror = function () { cuePlaying = false; pumpCues(); };
+  cueAudio.onended = function () { cuePlaying = false; cueInFlight = false; pumpCues(); };
+  cueAudio.onerror = function () { cuePlaying = false; cueInFlight = false; pumpCues(); };
+  cueAudio.onstalled = function () { cueInFlight = false; cuePlaying = false; pumpCues(); };
 
   function playCue(name) {
     if (!voiceOn) { return; }
@@ -430,7 +440,7 @@
     isRunning = false;
     cueQueue = [];
     try { cueAudio.pause(); } catch (e) {}
-    cuePlaying = false;
+    cuePlaying = false; cueInFlight = false;
     currentPhase = 'PREP';
     currentSet = 1;
     currentEx = 1;
