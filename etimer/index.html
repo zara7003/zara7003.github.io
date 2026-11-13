@@ -8,35 +8,21 @@
   * { box-sizing: border-box; margin: 0; padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
 
-  html, body {
-    width: 100%; height: 100%;
-    background: #0f172a; color: #f8fafc;
-    overflow: hidden;
-  }
+  html, body { width: 100%; height: 100%; background: #0f172a; color: #f8fafc; overflow: hidden; }
 
-  /* ---- TV stage: fills the whole panel, 5% overscan safe area ---- */
   .stage {
-    position: relative;
-    width: 100vw; height: 100vh;
-    padding: 2.5vh 3vw;
+    position: relative; width: 100vw; height: 100vh; padding: 2.5vh 3vw;
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-    text-align: center;
-    background: radial-gradient(circle at 50% 0%, #16233d 0%, #0f172a 70%);
+    text-align: center; background: radial-gradient(circle at 50% 0%, #16233d 0%, #0f172a 70%);
   }
 
-  h1 {
-    font-size: clamp(0.9rem, 2.4vh, 2.2rem);
-    color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4vw;
-    flex: 0 0 auto;
-  }
+  h1 { font-size: clamp(0.9rem, 2.4vh, 2.2rem); color: #94a3b8; text-transform: uppercase; letter-spacing: 0.4vw; flex: 0 0 auto; }
 
   .status-badge {
-    display: inline-block;
-    padding: 0.6vh 2.2vw; border-radius: 9999px;
+    display: inline-block; padding: 0.6vh 2.2vw; border-radius: 9999px;
     font-weight: 800; font-size: clamp(1rem, 4.2vh, 3.2rem);
     text-transform: uppercase; letter-spacing: 0.15vw;
-    transition: background-color .3s ease, color .3s ease;
-    flex: 0 0 auto;
+    transition: background-color .3s ease, color .3s ease; flex: 0 0 auto;
   }
   .status-work     { background: #10b981; color: #022c22; }
   .status-setbreak { background: #f59e0b; color: #451a03; }
@@ -46,26 +32,22 @@
   .status-done     { background: #22d3ee; color: #083344; }
 
   .exercise-title {
-    font-size: clamp(1.1rem, 5vh, 4rem);
-    font-weight: 800; color: #38bdf8;
-    line-height: 1.1; flex: 0 0 auto;
-    max-width: 94vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-size: clamp(1.1rem, 5vh, 4rem); font-weight: 800; color: #38bdf8;
+    line-height: 1.1; flex: 0 0 auto; max-width: 94vw;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
   .media-card {
-    width: 100%; flex: 1 1 auto; min-height: 8vh;
-    background: #0f172a; border: 2px dashed #334155; border-radius: 1.2vh;
-    margin: 1vh 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
+    width: 100%; flex: 1 1 auto; min-height: 8vh; background: #0f172a;
+    border: 2px dashed #334155; border-radius: 1.2vh; margin: 1vh 0;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
   }
   .media-card img { max-width: 100%; max-height: 100%; object-fit: contain; display: none; }
   .media-placeholder { color: #64748b; font-weight: 600; font-size: clamp(0.8rem, 2.2vh, 1.6rem); padding: 1vh; }
 
   .timer-display {
-    font-size: 30vh;
-    font-weight: 900; line-height: 0.95; flex: 0 0 auto;
-    font-variant-numeric: tabular-nums;
-    color: #f8fafc;
-    text-shadow: 0 0 4vh rgba(56,189,248,.25);
+    font-size: 30vh; font-weight: 900; line-height: 0.95; flex: 0 0 auto;
+    font-variant-numeric: tabular-nums; color: #f8fafc; text-shadow: 0 0 4vh rgba(56,189,248,.25);
   }
   .timer-display.phase-rest { color: #fbbf24; }
   .timer-display.phase-ex   { color: #60a5fa; }
@@ -80,36 +62,29 @@
   .controls { width: 100%; display: flex; gap: 1.2vw; margin-top: 1vh; flex: 0 0 auto; }
   button {
     flex: 1; padding: 1.1vh 1vw; border: none; border-radius: 1vh; cursor: pointer;
-    font-size: clamp(0.9rem, 2.2vh, 2.4rem); font-weight: 800;
-    transition: transform .1s;
+    font-size: clamp(0.9rem, 2.2vh, 2.4rem); font-weight: 800; transition: transform .1s;
   }
   button:active { transform: scale(.97); }
   .btn-start { background: #10b981; color: #022c22; }
   .btn-pause { background: #ef4444; color: #450a0a; }
   .btn-reset { background: #475569; color: #f8fafc; }
 
-  /* ---- sound unlock banner ---- */
   .sound-prompt {
-    position: absolute; top: 2.5vh; right: 3vw;
-    background: #f59e0b; color: #451a03; font-weight: 800;
-    padding: 0.8vh 1.4vw; border-radius: 0.8vh;
-    font-size: clamp(0.75rem, 1.9vh, 1.3rem);
-    z-index: 20;
+    position: absolute; top: 2.5vh; right: 3vw; background: #f59e0b; color: #451a03;
+    font-weight: 800; padding: 0.8vh 1.4vw; border-radius: 0.8vh;
+    font-size: clamp(0.75rem, 1.9vh, 1.3rem); z-index: 20;
   }
   .sound-prompt.hidden { display: none; }
 
-  /* ---- settings drawer ---- */
   .gear {
     position: absolute; top: 2.5vh; left: 3vw; z-index: 20;
-    width: auto; flex: none; padding: 0.8vh 1.4vw;
-    background: #334155; color: #e2e8f0;
+    width: auto; flex: none; padding: 0.8vh 1.4vw; background: #334155; color: #e2e8f0;
     font-size: clamp(0.75rem, 1.9vh, 1.3rem); border-radius: 0.8vh;
   }
+
   .settings-panel {
-    position: absolute; inset: 0; z-index: 30;
-    background: rgba(2, 6, 23, .96);
-    padding: 3vh 4vw; text-align: left;
-    display: none; flex-direction: column;
+    position: absolute; inset: 0; z-index: 30; background: rgba(2, 6, 23, .96);
+    padding: 3vh 4vw; text-align: left; display: none; flex-direction: column;
   }
   .settings-panel.open { display: flex; }
   .settings-panel h3 { margin-bottom: 1vh; font-size: clamp(0.8rem, 2vh, 1.4rem); color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
@@ -117,7 +92,7 @@
   .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1vh 1.5vw; margin-bottom: 2vh; }
   .input-group { display: flex; flex-direction: column; gap: 0.4vh; }
   .input-group label { font-size: clamp(0.7rem, 1.7vh, 1.1rem); color: #cbd5e1; }
-  .input-group input, .ex-custom-row input {
+  .input-group input, .input-group select, .ex-custom-row input {
     padding: 0.8vh 0.6vw; border-radius: 0.6vh; border: 1px solid #334155;
     background: #1e293b; color: #fff; font-size: clamp(0.85rem, 1.9vh, 1.2rem); text-align: center;
   }
@@ -125,6 +100,7 @@
   .ex-custom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1vh 1vw; margin-bottom: 1vh; }
   .ex-custom-row input { text-align: left; }
   .close-settings { flex: none; margin-top: 2vh; background: #10b981; color: #022c22; }
+  .test-sound { flex: none; margin-bottom: 1vh; background: #3b82f6; color: #0b1a3a; }
 </style>
 </head>
 <body>
@@ -142,7 +118,7 @@
     <div id="mediaPlaceholder" class="media-placeholder">📷 Add Image URL in Settings</div>
   </div>
 
-  <div id="timerDisplay" class="timer-display">10</div>
+  <div id="timerDisplay" class="timer-display">6</div>
 
   <div class="info-row">
     <span id="setInfo">Set: 1 / 10</span>
@@ -158,14 +134,14 @@
     <h3>Timer Settings</h3>
     <div class="settings-scroll">
       <div class="grid-inputs">
-        <div class="input-group"><label>Prep (sec)</label><input type="number" id="prepInput" value="10" min="1" onchange="updateSettings()"></div>
+        <div class="input-group"><label>Prep (sec)</label><input type="number" id="prepInput" value="6" min="3" onchange="updateSettings()"></div>
         <div class="input-group"><label>Work (sec)</label><input type="number" id="workInput" value="5" min="1" onchange="updateSettings()"></div>
         <div class="input-group"><label>Set Break (sec)</label><input type="number" id="setBreakInput" value="5" min="0" onchange="updateSettings()"></div>
         <div class="input-group"><label>Exercise Break (sec)</label><input type="number" id="exBreakInput" value="15" min="0" onchange="updateSettings()"></div>
         <div class="input-group"><label>Sets per Exercise</label><input type="number" id="setsInput" value="10" min="1" onchange="updateSettings()"></div>
         <div class="input-group"><label>Total Exercises</label><input type="number" id="exInput" value="10" min="1" onchange="renderExerciseInputs()"></div>
         <div class="input-group"><label>Voice cues</label>
-          <select id="voiceToggle" onchange="updateSettings()" style="padding:.8vh .6vw;border-radius:.6vh;border:1px solid #334155;background:#1e293b;color:#fff;font-size:clamp(.85rem,1.9vh,1.2rem);">
+          <select id="voiceToggle" onchange="updateSettings()">
             <option value="on" selected>On</option>
             <option value="off">Off (beeps only)</option>
           </select>
@@ -174,13 +150,14 @@
       <div class="ex-list-header">Exercise Names &amp; Images</div>
       <div id="exerciseInputsContainer"></div>
     </div>
+    <button class="test-sound" onclick="testSound()">🔊 Test sound</button>
     <button class="close-settings" onclick="toggleSettings()">Done</button>
   </div>
 </div>
 
 <script>
-  /* ES2017-safe: no optional chaining, no nullish coalescing — runs on old TV browsers */
-  var prepSec = 10, workSec = 5, setBreakSec = 5, exBreakSec = 15, setsPerEx = 10, totalEx = 10;
+  /* ES5-safe: runs on old smart-TV browsers */
+  var prepSec = 6, workSec = 5, setBreakSec = 5, exBreakSec = 15, setsPerEx = 10, totalEx = 10;
   var voiceOn = true;
 
   var exerciseList = [
@@ -196,20 +173,81 @@
     { name: "Side Plank Right", img: "" }
   ];
 
-  var currentPhase = 'PREP', currentSet = 1, currentEx = 1, timeLeft = 10;
-  var isRunning = false, timerId = null, audioUnlocked = false;
+  var currentPhase = 'PREP', currentSet = 1, currentEx = 1, timeLeft = 6;
+  var isRunning = false, timerId = null;
 
-  /* ---- audio engine (fails safe on TVs without WebAudio) ---- */
-  var audioCtx = null;
-  try {
-    var AC = window.AudioContext || window.webkitAudioContext;
-    if (AC) { audioCtx = new AC(); }
-  } catch (e) { audioCtx = null; }
+  /* ---------------- voice cues: pre-recorded mp3, queued so nothing gets clipped ---------------- */
+  var CUE_FILES = {
+    prepare: 'audio/prepare.mp3',
+    position: 'audio/position.mp3',
+    start: 'audio/start.mp3',
+    rest: 'audio/rest.mp3',
+    change: 'audio/change.mp3',
+    complete: 'audio/complete.mp3',
+    n5: 'audio/n5.mp3', n4: 'audio/n4.mp3', n3: 'audio/n3.mp3', n2: 'audio/n2.mp3', n1: 'audio/n1.mp3'
+  };
+
+  var cueQueue = [], cuePlaying = false, cueBlocked = false;
+  var cueAudio = new Audio();
+  cueAudio.preload = 'auto';
+  cueAudio.volume = 1.0;
+
+  function preloadCues() {
+    for (var k in CUE_FILES) {
+      if (CUE_FILES.hasOwnProperty(k)) {
+        try { var a = new Audio(); a.preload = 'auto'; a.src = CUE_FILES[k]; } catch (e) {}
+      }
+    }
+  }
+
+  function showSoundPrompt(on) {
+    var p = document.getElementById('soundPrompt');
+    if (!p) { return; }
+    p.className = on ? 'sound-prompt' : 'sound-prompt hidden';
+  }
+
+  function pumpCues() {
+    if (cuePlaying || cueQueue.length === 0) { return; }
+    var name = cueQueue.shift();
+    if (!voiceOn || !CUE_FILES[name]) { pumpCues(); return; }
+    try {
+      cueAudio.src = CUE_FILES[name];
+      var pr = cueAudio.play();
+      if (pr && pr.then) {
+        pr.then(function () { cuePlaying = true; cueBlocked = false; showSoundPrompt(false); })
+          .catch(function () { cuePlaying = false; cueBlocked = true; showSoundPrompt(true); cueQueue.unshift(name); });
+      } else { cuePlaying = true; }
+    } catch (e) { cuePlaying = false; }
+  }
+
+  cueAudio.onended = function () { cuePlaying = false; pumpCues(); };
+  cueAudio.onerror = function () { cuePlaying = false; pumpCues(); };
+
+  function playCue(name) {
+    if (!voiceOn) { return; }
+    cueQueue.push(name);
+    if (cueBlocked) { showSoundPrompt(true); return; }
+    pumpCues();
+  }
+
+  function sayNumber(n) {
+    if (n >= 1 && n <= 5) { playCue('n' + n); }
+  }
+
+  /* fallback speech for anything not pre-recorded (exercise names) */
+  function speakDynamic(text) {
+    if (!voiceOn) { return; }
+    try {
+      if ('speechSynthesis' in window) {
+        var u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.0; u.volume = 1.0;
+        window.speechSynthesis.speak(u);
+      }
+    } catch (e) {}
+  }
 
   function unlockAudio() {
-    if (audioUnlocked) { return; }
-    audioUnlocked = true;
-    try { if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume(); } } catch (e) {}
+    if (cueBlocked) { cueBlocked = false; pumpCues(); }
     try {
       if ('speechSynthesis' in window) {
         var u = new SpeechSynthesisUtterance(' ');
@@ -217,72 +255,9 @@
         window.speechSynthesis.speak(u);
       }
     } catch (e) {}
-    var p = document.getElementById('soundPrompt');
-    if (p) { p.className = 'sound-prompt hidden'; }
   }
 
-  function playAudioCue(type) {
-    if (!audioCtx) { return; }
-    try {
-      if (audioCtx.state === 'suspended') { audioCtx.resume(); }
-      var now = audioCtx.currentTime;
-      var osc = audioCtx.createOscillator();
-      var gain = audioCtx.createGain();
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      if (type === 'start') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(880, now);
-        osc.frequency.setValueAtTime(1174.66, now + 0.1);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-        osc.start(now); osc.stop(now + 0.25);
-      } else if (type === 'rest') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.setValueAtTime(330, now + 0.15);
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-        osc.start(now); osc.stop(now + 0.3);
-      } else if (type === 'position' || type === 'prepare') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, now);
-        gain.gain.setValueAtTime(0.35, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-        osc.start(now); osc.stop(now + 0.2);
-      } else if (type === 'change') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, now);
-        osc.frequency.setValueAtTime(659.25, now + 0.15);
-        osc.frequency.setValueAtTime(783.99, now + 0.3);
-        gain.gain.setValueAtTime(0.45, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-        osc.start(now); osc.stop(now + 0.5);
-      } else if (type === 'tick') {
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(700, now);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-        osc.start(now); osc.stop(now + 0.08);
-      }
-    } catch (e) {}
-  }
-
-  function speak(text, cueType) {
-    if (cueType) { playAudioCue(cueType); }
-    if (!voiceOn) { return; }
-    try {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        var utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 1.25;
-        utterance.volume = 1.0;
-        window.speechSynthesis.speak(utterance);
-      }
-    } catch (e) {}
-  }
-
+  /* ---------------- exercises / rendering ---------------- */
   function exNameAt(idx) {
     if (exerciseList[idx] && exerciseList[idx].name) { return exerciseList[idx].name; }
     return 'Exercise ' + (idx + 1);
@@ -292,7 +267,6 @@
     totalEx = parseInt(document.getElementById('exInput').value, 10) || 10;
     var container = document.getElementById('exerciseInputsContainer');
     container.innerHTML = '';
-
     for (var i = 0; i < totalEx; i++) {
       if (!exerciseList[i]) { exerciseList[i] = { name: 'Exercise ' + (i + 1), img: '' }; }
       var row = document.createElement('div');
@@ -365,6 +339,13 @@
     }
   }
 
+  /* ---------------- timer ---------------- */
+  function announcePrep() {
+    /* "Prepare." then "Position." (about 1 sec) then 5 4 3 2 1 */
+    playCue('prepare');
+    playCue('position');
+  }
+
   function toggleTimer() {
     var startBtn = document.getElementById('startBtn');
     if (isRunning) {
@@ -381,7 +362,8 @@
     startBtn.className = 'btn-pause';
 
     if (currentPhase === 'PREP' && timeLeft === prepSec) {
-      speak('Prepare. We are going to start ' + exNameAt(0) + '.', 'prepare');
+      cueQueue = [];
+      announcePrep();
     }
     clearInterval(timerId);
     timerId = setInterval(tick, 1000);
@@ -390,31 +372,31 @@
   function tick() {
     if (timeLeft > 1) {
       timeLeft--;
-
       if (currentPhase === 'PREP') {
-        if (timeLeft <= 3) { speak(String(timeLeft), 'tick'); }
+        if (timeLeft <= 5) { sayNumber(timeLeft); }
       } else if (currentPhase === 'WORK') {
-        if (timeLeft <= 5) { speak(String(timeLeft), 'tick'); }
+        if (timeLeft <= 5) { sayNumber(timeLeft); }
       } else if (currentPhase === 'SET_BREAK') {
-        if (timeLeft === 2) { speak('Position', 'position'); }
+        if (timeLeft === 2) { playCue('position'); }
       } else if (currentPhase === 'EX_BREAK') {
-        if (timeLeft === 3) { speak('Position', 'position'); }
-        else if (timeLeft === 2) { speak('Prepare', 'prepare'); }
+        if (timeLeft === 3) { playCue('position'); }
+        else if (timeLeft === 2) { playCue('prepare'); }
       }
     } else {
       if (currentPhase === 'PREP') {
         currentPhase = 'WORK';
         timeLeft = workSec;
-        speak('Start. ' + (workSec <= 5 ? workSec : ''), 'start');
+        playCue('start');
+        if (workSec <= 5) { sayNumber(workSec); }
       } else if (currentPhase === 'WORK') {
         if (currentSet < setsPerEx) {
           currentPhase = 'SET_BREAK';
           timeLeft = setBreakSec;
-          speak('Rest', 'rest');
+          playCue('rest');
         } else if (currentEx < totalEx) {
           currentPhase = 'EX_BREAK';
           timeLeft = exBreakSec;
-          speak('Stop. Change position for ' + exNameAt(currentEx), 'change');
+          playCue('change');
         } else {
           clearInterval(timerId);
           isRunning = false;
@@ -422,20 +404,21 @@
           document.getElementById('startBtn').innerText = 'Start';
           document.getElementById('startBtn').className = 'btn-start';
           updateDisplay();
-          speak('Workout complete. Great job!', 'start');
+          playCue('complete');
           return;
         }
       } else if (currentPhase === 'SET_BREAK') {
         currentSet++;
         currentPhase = 'WORK';
         timeLeft = workSec;
-        speak('Start. ' + (workSec <= 5 ? workSec : ''), 'start');
+        playCue('start');
+        if (workSec <= 5) { sayNumber(workSec); }
       } else if (currentPhase === 'EX_BREAK') {
         currentEx++;
         currentSet = 1;
         currentPhase = 'WORK';
         timeLeft = workSec;
-        speak('Start ' + exNameAt(currentEx - 1) + '. ' + (workSec <= 5 ? workSec : ''), 'start');
+        playCue('start');
       }
     }
     updateDisplay();
@@ -444,6 +427,9 @@
   function resetTimer() {
     clearInterval(timerId);
     isRunning = false;
+    cueQueue = [];
+    try { cueAudio.pause(); } catch (e) {}
+    cuePlaying = false;
     currentPhase = 'PREP';
     currentSet = 1;
     currentEx = 1;
@@ -454,13 +440,12 @@
   }
 
   function updateSettings() {
-    prepSec = parseInt(document.getElementById('prepInput').value, 10) || 10;
+    prepSec = parseInt(document.getElementById('prepInput').value, 10) || 6;
     workSec = parseInt(document.getElementById('workInput').value, 10) || 5;
     setBreakSec = parseInt(document.getElementById('setBreakInput').value, 10) || 0;
     exBreakSec = parseInt(document.getElementById('exBreakInput').value, 10) || 0;
     setsPerEx = parseInt(document.getElementById('setsInput').value, 10) || 10;
     voiceOn = document.getElementById('voiceToggle').value === 'on';
-
     if (!isRunning) {
       timeLeft = prepSec;
       currentPhase = 'PREP';
@@ -473,20 +458,23 @@
     p.className = (p.className.indexOf('open') > -1) ? 'settings-panel' : 'settings-panel open';
   }
 
-  /* ---- start on load: visuals run immediately, sound unlocks on first key/tap ---- */
+  function testSound() {
+    unlockAudio();
+    cueQueue = [];
+    playCue('prepare');
+    playCue('position');
+    setTimeout(function () { sayNumber(5); }, 1600);
+    setTimeout(function () { sayNumber(4); }, 2300);
+  }
+
+  /* ---------------- boot ---------------- */
   function boot() {
+    preloadCues();
     renderExerciseInputs();
     updateSettings();
     updateDisplay();
+    showSoundPrompt(true);
 
-    var promptEl = document.getElementById('soundPrompt');
-    promptEl.className = 'sound-prompt';
-    /* if the browser allowed audio without a gesture (phones usually do), drop the hint */
-    setTimeout(function () {
-      if (audioCtx && audioCtx.state === 'running') { promptEl.className = 'sound-prompt hidden'; }
-    }, 900);
-
-    /* any remote key / tap / click unlocks audio, then autostart proceeds */
     var unlockOnce = function () {
       unlockAudio();
       window.removeEventListener('keydown', unlockOnce, true);
@@ -497,15 +485,14 @@
     window.addEventListener('click', unlockOnce, true);
     window.addEventListener('touchstart', unlockOnce, true);
 
-    /* TV remotes use Enter / arrows / coloured keys */
     window.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.keyCode === 13) { toggleTimer(); }
-      else if (e.key === ' ' || e.keyCode === 32) { toggleTimer(); }
-      else if (e.key === 'Escape' || e.keyCode === 27) {
+      var k = e.key, c = e.keyCode;
+      if (k === 'Enter' || c === 13 || k === ' ' || c === 32) { toggleTimer(); }
+      else if (k === 'Escape' || c === 27) {
         var p = document.getElementById('settingsPanel');
         if (p.className.indexOf('open') > -1) { toggleSettings(); }
-      } else if (e.key === 'r' || e.key === 'R') { resetTimer(); }
-      else if (e.key === 's' || e.key === 'S') { toggleSettings(); }
+      } else if (k === 'r' || k === 'R') { resetTimer(); }
+      else if (k === 's' || k === 'S') { toggleSettings(); }
     });
 
     toggleTimer();
