@@ -187,6 +187,7 @@
     n5: 'audio/n5.mp3', n4: 'audio/n4.mp3', n3: 'audio/n3.mp3', n2: 'audio/n2.mp3', n1: 'audio/n1.mp3'
   };
 
+  var CUE_VER = '?v=2';  /* cache-buster: Cloudflare held a stale 404 for one file */
   var cueQueue = [], cuePlaying = false, cueBlocked = false;
   var cueAudio = new Audio();
   cueAudio.preload = 'auto';
@@ -195,7 +196,7 @@
   function preloadCues() {
     for (var k in CUE_FILES) {
       if (CUE_FILES.hasOwnProperty(k)) {
-        try { var a = new Audio(); a.preload = 'auto'; a.src = CUE_FILES[k]; } catch (e) {}
+        try { var a = new Audio(); a.preload = 'auto'; a.src = CUE_FILES[k] + CUE_VER; } catch (e) {}
       }
     }
   }
@@ -211,7 +212,7 @@
     var name = cueQueue.shift();
     if (!voiceOn || !CUE_FILES[name]) { pumpCues(); return; }
     try {
-      cueAudio.src = CUE_FILES[name];
+      cueAudio.src = CUE_FILES[name] + CUE_VER;
       var pr = cueAudio.play();
       if (pr && pr.then) {
         pr.then(function () { cuePlaying = true; cueBlocked = false; showSoundPrompt(false); })
