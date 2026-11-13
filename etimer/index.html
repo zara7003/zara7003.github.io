@@ -131,7 +131,7 @@
 
 <div class="stage">
   <button class="gear" onclick="toggleSettings()" id="gearBtn">⚙ Settings</button>
-  <div class="sound-prompt hidden" id="soundPrompt">🔊 Press OK / tap for sound</div>
+  <div class="sound-prompt" id="soundPrompt">🔊 Press OK / tap for sound</div>
 
   <h1>Workout Timer</h1>
   <div id="statusBadge" class="status-badge status-idle">Ready</div>
@@ -480,8 +480,11 @@
     updateDisplay();
 
     var promptEl = document.getElementById('soundPrompt');
-    var audioBlocked = (!audioCtx) || (audioCtx.state === 'suspended');
-    if (audioBlocked) { promptEl.className = 'sound-prompt'; }
+    promptEl.className = 'sound-prompt';
+    /* if the browser allowed audio without a gesture (phones usually do), drop the hint */
+    setTimeout(function () {
+      if (audioCtx && audioCtx.state === 'running') { promptEl.className = 'sound-prompt hidden'; }
+    }, 900);
 
     /* any remote key / tap / click unlocks audio, then autostart proceeds */
     var unlockOnce = function () {
