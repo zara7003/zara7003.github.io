@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voice & Visual Workout Interval Timer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background-color: #0f172a; color: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center; }
+    .container { max-width: 550px; width: 100%; background: #1e293b; padding: 24px; border-radius: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5); }
+    h1 { font-size: 1.5rem; margin-bottom: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; }
+    
+    .status-badge { display: inline-block; padding: 8px 24px; border-radius: 9999px; font-weight: 800; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; transition: all 0.3s ease; }
+    .status-work { background-color: #10b981; color: #022c22; }
+    .status-setbreak { background-color: #f59e0b; color: #451a03; }
+    .status-exbreak { background-color: #3b82f6; color: #1e3a8a; }
+    .status-prep { background-color: #8b5cf6; color: #2e1065; }
+    .status-idle { background-color: #475569; color: #f8fafc; }
+    
+    .exercise-title { font-size: 1.8rem; font-weight: 800; color: #38bdf8; margin-bottom: 8px; min-height: 2.2rem; }
+
+    .media-card { width: 100%; height: 200px; background: #0f172a; border-radius: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px dashed #334155; position: relative; }
+    .media-card img { width: 100%; height: 100%; object-fit: contain; display: none; }
+    .media-placeholder { color: #64748b; font-size: 0.95rem; font-weight: 600; padding: 10px; }
+
+    .timer-display { font-size: 5.5rem; font-weight: 900; margin: 2px 0; font-variant-numeric: tabular-nums; line-height: 1; }
+    .info-row { display: flex; justify-content: space-around; margin-bottom: 16px; font-size: 1.05rem; color: #cbd5e1; font-weight: 600; background: #0f172a; padding: 10px; border-radius: 12px; }
+    
+    .controls { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+    button { flex: 1; padding: 14px 20px; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 12px; cursor: pointer; transition: transform 0.1s; }
+    button:active { transform: scale(0.97); }
+    .btn-start { background-color: #10b981; color: #022c22; }
+    .btn-pause { background-color: #ef4444; color: #450a0a; }
+    .btn-reset { background-color: #475569; color: #f8fafc; }
+    
+    .settings-panel { background: #0f172a; padding: 16px; border-radius: 16px; text-align: left; max-height: 300px; overflow-y: auto; }
+    .settings-panel h3 { margin-bottom: 10px; font-size: 0.95rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+    .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+    .input-group { display: flex; flex-direction: column; gap: 4px; }
+    .input-group label { font-size: 0.8rem; color: #cbd5e1; }
+    .input-group input { width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid #334155; background: #1e293b; color: #fff; font-size: 0.95rem; text-align: center; }
+    
+    .ex-list-header { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; margin: 10px 0 8px; font-weight: 700; }
+    .ex-custom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .ex-custom-row input { padding: 6px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Workout Timer</h1>
+    <div id="statusBadge" class="status-badge status-idle">Ready</div>
+    <div id="exerciseTitle" class="exercise-title">Cobra Position</div>
+    
+    <div class="media-card">
+      <img id="exerciseImg" src="" alt="Exercise Visual">
+      <div id="mediaPlaceholder" class="media-placeholder">📷 Add Image URL below in settings</div>
+    </div>
+
+    <div id="timerDisplay" class="timer-display">10</div>
+    
+    <div class="info-row">
+      <span id="setInfo">Set: 1 / 10</span>
+      <span id="exInfo">Exercise: 1 / 10</span>
+    </div>
+
+    <div class="controls">
+      <button id="startBtn" class="btn-pause" onclick="toggleTimer()">Pause</button>
+      <button class="btn-reset" onclick="resetTimer()">Reset</button>
+    </div>
+
+    <div class="settings-panel">
+      <h3>Timer Timings</h3>
+      <div class="grid-inputs">
+        <div class="input-group">
+          <label>Prep Time (sec):</label>
+          <input type="number" id="prepInput" value="10" min="1" onchange="updateSettings()">
+        </div>
+        <div class="input-group">
+          <label>Work (sec):</label>
+          <input type="number" id="workInput" value="5" min="1" onchange="updateSettings()">
+        </div>
+        <div class="input-group">
+          <label>Set Break (sec):</label>
+          <input type="number" id="setBreakInput" value="5" min="0" onchange="updateSettings()">
+        </div>
+        <div class="input-group">
+          <label>Exercise Break (sec):</label>
+          <input type="number" id="exBreakInput" value="15" min="0" onchange="updateSettings()">
+        </div>
+        <div class="input-group">
+          <label>Sets per Exercise:</label>
+          <input type="number" id="setsInput" value="10" min="1" onchange="updateSettings()">
+        </div>
+        <div class="input-group">
+          <label>Total Exercises:</label>
+          <input type="number" id="exInput" value="10" min="1" onchange="renderExerciseInputs()">
+        </div>
+      </div>
+
+      <div class="ex-list-header">Customize Exercise Names & Images</div>
+      <div id="exerciseInputsContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    let prepSec = 10;
+    let workSec = 5;
+    let setBreakSec = 5;
+    let exBreakSec = 15;
+    let setsPerEx = 10;
+    let totalEx = 10;
+
+    let exerciseList = [
+      { name: "Cobra Position", img: "" },
+      { name: "Hamstring Stretch", img: "" },
+      { name: "Child Pose", img: "" },
+      { name: "Glute Bridge", img: "" },
+      { name: "Plank Hold", img: "" },
+      { name: "Quad Stretch", img: "" },
+      { name: "Cat Cow Stretch", img: "" },
+      { name: "Calf Stretch", img: "" },
+      { name: "Side Plank Left", img: "" },
+      { name: "Side Plank Right", img: "" }
+    ];
+
+    let currentPhase = 'PREP';
+    let currentSet = 1;
+    let currentEx = 1;
+    let timeLeft = prepSec;
+    let isRunning = false;
+    let timerId = null;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playAudioCue(type) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      if (type === 'start') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.setValueAtTime(1174.66, now + 0.1);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } else if (type === 'rest') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, now);
+        osc.frequency.setValueAtTime(330, now + 0.15);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'position' || type === 'prepare') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, now);
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else if (type === 'change') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.15);
+        osc.frequency.setValueAtTime(783.99, now + 0.3);
+        gain.gain.setValueAtTime(0.45, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      } else if (type === 'tick') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(700, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      }
+    }
+
+    function speak(text, cueType = '') {
+      if (cueType) playAudioCue(cueType);
+
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 1.25;
+          utterance.volume = 1.0;
+          window.speechSynthesis.speak(utterance);
+        } catch(e) {}
+      }
+    }
+
+    function renderExerciseInputs() {
+      totalEx = parseInt(document.getElementById('exInput').value) || 10;
+      const container = document.getElementById('exerciseInputsContainer');
+      container.innerHTML = '';
+
+      for (let i = 0; i < totalEx; i++) {
+        if (!exerciseList[i]) {
+          exerciseList[i] = { name: `Exercise ${i + 1}`, img: "" };
+        }
+        const row = document.createElement('div');
+        row.className = 'ex-custom-row';
+        row.innerHTML = `
+          <input type="text" placeholder="Ex ${i+1} Name" value="${exerciseList[i].name}" onchange="updateExData(${i}, 'name', this.value)">
+          <input type="text" placeholder="Image URL (optional)" value="${exerciseList[i].img}" onchange="updateExData(${i}, 'img', this.value)">
+        `;
+        container.appendChild(row);
+      }
+      updateDisplay();
+    }
+
+    function updateExData(index, field, value) {
+      exerciseList[index][field] = value;
+      updateDisplay();
+    }
+
+    function formatTime(seconds) {
+      if (seconds < 60) return String(seconds).padStart(2, '0');
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateDisplay() {
+      const statusBadge = document.getElementById('statusBadge');
+      const timerDisplay = document.getElementById('timerDisplay');
+      const setInfo = document.getElementById('setInfo');
+      const exInfo = document.getElementById('exInfo');
+      const exerciseTitle = document.getElementById('exerciseTitle');
+      const exerciseImg = document.getElementById('exerciseImg');
+      const mediaPlaceholder = document.getElementById('mediaPlaceholder');
+
+      timerDisplay.innerText = formatTime(timeLeft);
+      setInfo.innerText = `Set: ${currentSet} / ${setsPerEx}`;
+      exInfo.innerText = `Exercise: ${currentEx} / ${totalEx}`;
+
+      const activeEx = exerciseList[currentEx - 1] || { name: `Exercise ${currentEx}`, img: "" };
+      exerciseTitle.innerText = activeEx.name;
+
+      if (activeEx.img && activeEx.img.trim() !== "") {
+        exerciseImg.src = activeEx.img;
+        exerciseImg.style.display = 'block';
+        mediaPlaceholder.style.display = 'none';
+      } else {
+        exerciseImg.style.display = 'none';
+        mediaPlaceholder.style.display = 'block';
+        mediaPlaceholder.innerText = `📷 Position: ${activeEx.name}`;
+      }
+
+      if (currentPhase === 'PREP') {
+        statusBadge.innerText = 'PREPARE';
+        statusBadge.className = 'status-badge status-prep';
+      } else if (currentPhase === 'WORK') {
+        statusBadge.innerText = 'WORK';
+        statusBadge.className = 'status-badge status-work';
+      } else if (currentPhase === 'SET_BREAK') {
+        statusBadge.innerText = 'REST';
+        statusBadge.className = 'status-badge status-setbreak';
+      } else if (currentPhase === 'EX_BREAK') {
+        statusBadge.innerText = 'CHANGE POSITION';
+        statusBadge.className = 'status-badge status-exbreak';
+      }
+    }
+
+    function toggleTimer() {
+      const startBtn = document.getElementById('startBtn');
+      if (isRunning) {
+        clearInterval(timerId);
+        isRunning = false;
+        startBtn.innerText = 'Start';
+        startBtn.className = 'btn-start';
+      } else {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        isRunning = true;
+        startBtn.innerText = 'Pause';
+        startBtn.className = 'btn-pause';
+        
+        if (currentPhase === 'PREP' && timeLeft === prepSec) {
+          const exName = exerciseList[0]?.name || "Exercise 1";
+          speak(`Prepare. We are going to start ${exName}.`, 'prepare');
+        }
+        timerId = setInterval(tick, 1000);
+      }
+    }
+
+    function tick() {
+      if (timeLeft > 1) {
+        timeLeft--;
+        
+        if (currentPhase === 'PREP') {
+          if (timeLeft <= 3) speak(String(timeLeft), 'tick');
+        } else if (currentPhase === 'WORK') {
+          if (timeLeft <= 5) speak(String(timeLeft), 'tick');
+        } else if (currentPhase === 'SET_BREAK') {
+          if (timeLeft === 2) speak("Position", 'position');
+        } else if (currentPhase === 'EX_BREAK') {
+          if (timeLeft === 3) speak("Position", 'position');
+          else if (timeLeft === 2) speak("Prepare", 'prepare');
+        }
+      } else {
+        if (currentPhase === 'PREP') {
+          currentPhase = 'WORK';
+          timeLeft = workSec;
+          speak(`Start. ${workSec <= 5 ? workSec : ''}`, 'start');
+        } else if (currentPhase === 'WORK') {
+          if (currentSet < setsPerEx) {
+            currentPhase = 'SET_BREAK';
+            timeLeft = setBreakSec;
+            speak("Rest", 'rest');
+          } else {
+            if (currentEx < totalEx) {
+              currentPhase = 'EX_BREAK';
+              timeLeft = exBreakSec;
+              const nextExName = exerciseList[currentEx]?.name || `Exercise ${currentEx + 1}`;
+              speak(`Stop. Change position for ${nextExName}`, 'change');
+            } else {
+              clearInterval(timerId);
+              isRunning = false;
+              document.getElementById('startBtn').innerText = 'Start';
+              document.getElementById('startBtn').className = 'btn-start';
+              document.getElementById('statusBadge').innerText = 'WORKOUT COMPLETE';
+              document.getElementById('statusBadge').className = 'status-badge status-idle';
+              speak("Workout complete. Great job!", 'start');
+              return;
+            }
+          }
+        } else if (currentPhase === 'SET_BREAK') {
+          currentSet++;
+          currentPhase = 'WORK';
+          timeLeft = workSec;
+          speak(`Start. ${workSec <= 5 ? workSec : ''}`, 'start');
+        } else if (currentPhase === 'EX_BREAK') {
+          currentEx++;
+          currentSet = 1;
+          currentPhase = 'WORK';
+          timeLeft = workSec;
+          const exName = exerciseList[currentEx - 1]?.name || `Exercise ${currentEx}`;
+          speak(`Start ${exName}. ${workSec <= 5 ? workSec : ''}`, 'start');
+        }
+      }
+      updateDisplay();
+    }
+
+    function resetTimer() {
+      clearInterval(timerId);
+      isRunning = false;
+      currentPhase = 'PREP';
+      currentSet = 1;
+      currentEx = 1;
+      updateSettings();
+      document.getElementById('startBtn').innerText = 'Start';
+      document.getElementById('startBtn').className = 'btn-start';
+      updateDisplay();
+    }
+
+    function updateSettings() {
+      prepSec = parseInt(document.getElementById('prepInput').value) || 10;
+      workSec = parseInt(document.getElementById('workInput').value) || 5;
+      setBreakSec = parseInt(document.getElementById('setBreakInput').value) || 5;
+      exBreakSec = parseInt(document.getElementById('exBreakInput').value) || 15;
+      setsPerEx = parseInt(document.getElementById('setsInput').value) || 10;
+
+      if (!isRunning) {
+        timeLeft = prepSec;
+        currentPhase = 'PREP';
+        updateDisplay();
+      }
+    }
+
+    renderExerciseInputs();
+
+    // Auto-start timer immediately upon page load
+    window.addEventListener('DOMContentLoaded', () => {
+      toggleTimer();
+    });
+  </script>
+</body>
+</html>
