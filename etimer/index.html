@@ -310,8 +310,8 @@
             <label>Radio Channel:</label>
             <select id="radioChannelSelect" onchange="updateSettings()">
               <option value="https://stream.zeno.fm/f3wvbbqmdg8uv" selected>Upbeat Fitness & Workout</option>
-              <option value="https://stream.zeno.fm/0r0xa792twzuv">Synthwave Energy Radio</option>
-              <option value="https://icecast.somafm.com/groovesalad-128-mp3">Chill Lo-Fi / Groove Salad</option>
+              <option value="https://ice1.somafm.com/u80s-128-mp3">Synthwave Energy Radio</option>
+              <option value="https://ice1.somafm.com/groovesalad-128-mp3">Chill Lo-Fi / Groove Salad</option>
             </select>
           </div>
           <div class="input-group">
@@ -559,7 +559,7 @@
         updateRadioPlaybackState();
 
         if (currentPhase === 'PREP' && timeLeft === prepSec) {
-          const exName = exerciseList[0]?.name || "Exercise 1";
+          const exName = (exerciseList[0] && exerciseList[0].name) || "Exercise 1";
           speak(`Prepare. ${exName}.`, 'prepare');
         }
         timerId = setInterval(tick, 1000);
@@ -597,7 +597,7 @@
             if (currentEx < totalEx) {
               currentPhase = 'EX_BREAK';
               timeLeft = exBreakSec;
-              const nextExName = exerciseList[currentEx]?.name || `Exercise ${currentEx + 1}`;
+              const nextExName = (exerciseList[currentEx] && exerciseList[currentEx].name) || `Exercise ${currentEx + 1}`;
               speak(`Set completed. Rest. Next is ${nextExName}`, 'change');
             } else {
               clearInterval(timerId);
@@ -621,7 +621,7 @@
           currentSet = 1;
           currentPhase = 'WORK';
           timeLeft = workSec;
-          const exName = exerciseList[currentEx - 1]?.name || `Exercise ${currentEx}`;
+          const exName = (exerciseList[currentEx - 1] && exerciseList[currentEx - 1].name) || `Exercise ${currentEx}`;
           speak(`Start ${exName}`, 'start');
         }
       }
