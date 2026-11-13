@@ -347,7 +347,9 @@
             cueInFlight = false; cuePlaying = true; cueBlocked = false;
             cueQueue.shift(); showHint(false);
           }).catch(function () {
+            // blocked by the browser's autoplay policy: drop stale cues so nothing fires late as a burst
             cueInFlight = false; cuePlaying = false; cueBlocked = true;
+            cueQueue.length = 0;
             showHint(true);
             if (hintTimer) { clearTimeout(hintTimer); }
             hintTimer = setTimeout(function () { showHint(false); }, 12000);
