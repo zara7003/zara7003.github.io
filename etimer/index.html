@@ -209,25 +209,25 @@
 
   var cueInFlight = false;
 
-  function cueOk() { cueInFlight = false; cuePlaying = true; cueBlocked = false; showSoundPrompt(false); }
-  function cueFail(name) {
-    cueInFlight = false; cuePlaying = false; cueBlocked = true;
-    showSoundPrompt(true);
-    cueQueue.unshift(name);
-  }
-
+  /* peek first: the cue stays at the head of the queue until it really starts,
+     so a blocked/failed attempt can never reorder prepare -> position -> 5..1 */
   function pumpCues() {
     if (cuePlaying || cueInFlight || cueQueue.length === 0) { return; }
-    var name = cueQueue.shift();
-    if (!voiceOn || !CUE_FILES[name]) { pumpCues(); return; }
+    var name = cueQueue[0];
+    if (!voiceOn || !CUE_FILES[name]) { cueQueue.shift(); pumpCues(); return; }
     cueInFlight = true;
     try {
       cueAudio.src = CUE_FILES[name] + CUE_VER;
       var pr = cueAudio.play();
       if (pr && pr.then) {
-        pr.then(function () { cueOk(); }).catch(function () { cueFail(name); });
-      } else { cueOk(); }
-    } catch (e) { cueFail(name); }
+        pr.then(function () { cueInFlight = false; cuePlaying = true; cueBlocked = false; cueQueue.shift(); showSoundPrompt(false); })
+          .catch(function () { cueInFlight = false; cuePlaying = false; cueBlocked = true; showSoundPrompt(true); });
+      } else {
+        cueInFlight = false; cuePlaying = true; cueQueue.shift();
+      }
+    } catch (e) {
+      cueInFlight = false; cuePlaying = false; cueBlocked = true; showSoundPrompt(true);
+    }
   }
 
   cueAudio.onended = function () { cuePlaying = false; cueInFlight = false; pumpCues(); };
@@ -485,6 +485,8 @@
     updateSettings();
     updateDisplay();
     showSoundPrompt(true);
+    var sp = document.getElementById('soundPrompt');
+    if (sp) { sp.onclick = function () { unlockAudio(); }; }
 
     var unlockOnce = function () {
       unlockAudio();
@@ -495,9 +497,11 @@
     window.addEventListener('keydown', unlockOnce, true);
     window.addEventListener('click', unlockOnce, true);
     window.addEventListener('touchstart', unlockOnce, true);
+    window.addEventListener('click', function () { unlockAudio(); }, true);
 
     window.addEventListener('keydown', function (e) {
       var k = e.key, c = e.keyCode;
+      unlockAudio();   /* every remote key retries playback if it was blocked */
       if (k === 'Enter' || c === 13 || k === ' ' || c === 32) { toggleTimer(); }
       else if (k === 'Escape' || c === 27) {
         var p = document.getElementById('settingsPanel');
