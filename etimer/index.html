@@ -354,6 +354,7 @@
     /* ---------- voice output: device voice on phone/PC (natural, always present), clips as fallback ---------- */
     var SPEAK_TEXT = {
       prepare: 'Set position. Ready.',
+      ready: 'Ready',
       position: 'Position',
       rest: 'Rest',
       change: 'Change position',
@@ -408,6 +409,7 @@
       if (ttsReady() && SPEAK_TEXT[name]) {
         if (speakText(SPEAK_TEXT[name])) { return; }
       }
+      if (name === 'ready') { name = 'prepare'; }   /* clip mode: prepare.mp3 is the "get ready" line */
       if (!CUE_FILES[name]) { beepFor(name); return; }
       cueQueue.push(name);
       pumpCues();
@@ -488,10 +490,36 @@
 
     function numCue(n) { return (n >= 1 && n <= 5) ? ('n' + n) : ''; }
 
+    /* every phase stores the wall-clock instant it ends, so the countdown cannot drift */
+    var endAt = 0;
+    var TICK_MS = 200;
+
+    function setPhase(phase, seconds) {
+      currentPhase = phase;
+      timeLeft = seconds;
+      endAt = Date.now() + seconds * 1000;
+    }
+
+    function secondsLeft() {
+      var ms = endAt - Date.now();
+      return ms <= 0 ? 0 : Math.ceil(ms / 1000);
+    }
+
+    /* WORK counts 5-4-3-2-1. REST / PREP / CHANGE count 5-4-3 then say "Ready" two seconds out — never "one". */
+    function cueForSecond(t) {
+      if (currentPhase === 'WORK') {
+        if (t >= 1 && t <= 5) { playCue(numCue(t)); }
+        return;
+      }
+      if (t === 2) { playCue('ready'); return; }
+      if (t >= 3 && t <= 5) { playCue(numCue(t)); }
+    }
+
     function toggleTimer() {
       initAudioContext();
       var btn = document.getElementById('startBtn');
       if (isRunning) {
+        timeLeft = secondsLeft();
         clearInterval(timerId); isRunning = false;
         btn.innerText = 'Start'; btn.className = 'btn-start';
         document.getElementById('bgRadio').pause();
@@ -503,53 +531,58 @@
           playCue('prepare');
           speakExtra('Set position. Ready.');
         }
-        timerId = setInterval(tick, 1000);
+        endAt = Date.now() + timeLeft * 1000;
+        clearInterval(timerId);
+        timerId = setInterval(tick, TICK_MS);
       }
     }
 
     function tick() {
+      var t = secondsLeft();
+      if (t !== timeLeft) {
+        timeLeft = t;
+        if (t > 0) { cueForSecond(t); updateDisplay(); }
+      }
+      if (timeLeft <= 0) { advancePhase(); }
+    }
+
+    function advancePhase() {
       var ex = exerciseList[currentEx - 1] || exerciseList[0];
-      if (timeLeft > 1) {
-        timeLeft--;
-        if (timeLeft <= 5) {
-          if (timeLeft === 2) { playCue('position'); }
-          else { playCue(numCue(timeLeft)); }
-        } else if (timeLeft === 3 && currentPhase === 'EX_BREAK') {
-          playCue('prepare');
+      if (currentPhase === 'PREP') {
+        setPhase('WORK', ex.work); playCue('start');
+      } else if (currentPhase === 'WORK') {
+        if (currentSet < ex.sets) {
+          setPhase('SET_BREAK', ex.break); playCue('rest');
+        } else if (currentEx < exerciseList.length) {
+          setPhase('EX_BREAK', exBreakSec); playCue('change');
+          speakExtra('Exercise ' + currentEx + ' of ' + exerciseList.length + ' completed. Change position.');
+        } else {
+          finishWorkout(); return;
         }
-      } else {
-        if (currentPhase === 'PREP') {
-          currentPhase = 'WORK'; timeLeft = ex.work; playCue('start');
-        } else if (currentPhase === 'WORK') {
-          if (currentSet < ex.sets) {
-            currentPhase = 'SET_BREAK'; timeLeft = ex.break; playCue('rest');
-          } else if (currentEx < exerciseList.length) {
-            currentPhase = 'EX_BREAK'; timeLeft = exBreakSec;
-            playCue('change');
-            speakExtra('Exercise ' + currentEx + ' of ' + exerciseList.length + ' completed. Change position.');
-          } else {
-            clearInterval(timerId); isRunning = false;
-            document.getElementById('startBtn').innerText = 'Start';
-            document.getElementById('startBtn').className = 'btn-start';
-            document.getElementById('statusBadge').innerText = 'WORKOUT COMPLETE';
-            document.getElementById('statusBadge').className = 'status-badge status-idle';
-            playCue('complete');
-            document.getElementById('bgRadio').pause();
-            return;
-          }
-        } else if (currentPhase === 'SET_BREAK') {
-          currentSet++; currentPhase = 'WORK'; timeLeft = ex.work; playCue('start');
-        } else if (currentPhase === 'EX_BREAK') {
-          currentEx++; currentSet = 1; currentPhase = 'WORK';
-          timeLeft = exerciseList[currentEx - 1].work; playCue('start');
-        }
+      } else if (currentPhase === 'SET_BREAK') {
+        currentSet++; setPhase('WORK', ex.work); playCue('start');
+      } else if (currentPhase === 'EX_BREAK') {
+        currentEx++; currentSet = 1;
+        var nx = exerciseList[currentEx - 1] || exerciseList[0];
+        setPhase('WORK', nx.work); playCue('start');
       }
       updateDisplay();
     }
 
+    function finishWorkout() {
+      clearInterval(timerId); isRunning = false;
+      document.getElementById('startBtn').innerText = 'Start';
+      document.getElementById('startBtn').className = 'btn-start';
+      document.getElementById('statusBadge').innerText = 'WORKOUT COMPLETE';
+      document.getElementById('statusBadge').className = 'status-badge status-idle';
+      playCue('complete');
+      document.getElementById('bgRadio').pause();
+    }
+
     function resetTimer() {
-      clearInterval(timerId); isRunning = false; currentPhase = 'PREP';
-      currentSet = 1; currentEx = 1; timeLeft = prepSec;
+      clearInterval(timerId); isRunning = false;
+      currentSet = 1; currentEx = 1;
+      setPhase('PREP', prepSec);
       document.getElementById('startBtn').innerText = 'Start';
       document.getElementById('startBtn').className = 'btn-start';
       var radio = document.getElementById('bgRadio');
@@ -562,7 +595,7 @@
       exBreakSec = parseInt(document.getElementById('exBreakInput').value, 10) || 10;
       autoStart = document.getElementById('autoStartSelect').value === 'yes';
       cueMode = document.getElementById('voiceSelect').value === 'clips' ? 'clips' : 'device';
-      if (!isRunning) { timeLeft = prepSec; currentPhase = 'PREP'; updateDisplay(); }
+      if (!isRunning) { currentPhase = 'PREP'; timeLeft = prepSec; endAt = Date.now() + prepSec * 1000; updateDisplay(); }
     }
 
     function addExerciseRow() {
