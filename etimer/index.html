@@ -175,6 +175,13 @@
             </select>
           </div>
           <div class="input-group">
+            <label>Voice Cues:</label>
+            <select id="voiceSelect" onchange="updateGlobalTimings()">
+              <option value="device" selected>Device Voice (phone/PC)</option>
+              <option value="clips">Recorded Clips (TV)</option>
+            </select>
+          </div>
+          <div class="input-group">
             <label>Auto-Start On Load:</label>
             <select id="autoStartSelect" onchange="updateGlobalTimings()">
               <option value="yes" selected>Yes (No Remote Needed)</option>
@@ -344,22 +351,72 @@
     cueAudio.addEventListener('ended', function () { cuePlaying = false; cueInFlight = false; pumpCues(); });
     cueAudio.addEventListener('error', function () { cuePlaying = false; cueInFlight = false; pumpCues(); });
 
+    /* ---------- voice output: device voice on phone/PC (natural, always present), clips as fallback ---------- */
+    var SPEAK_TEXT = {
+      prepare: 'Set position. Ready.',
+      position: 'Position',
+      rest: 'Rest',
+      change: 'Change position',
+      start: 'Start',
+      complete: 'Workout complete. Great job',
+      n5: 'Five', n4: 'Four', n3: 'Three', n2: 'Two', n1: 'One'
+    };
+    var cueMode = 'device';
+    var voicesCache = [];
+
+    function primeVoices() {
+      if (!('speechSynthesis' in window)) { return; }
+      try {
+        voicesCache = window.speechSynthesis.getVoices() || [];
+        window.speechSynthesis.onvoiceschanged = function () {
+          voicesCache = window.speechSynthesis.getVoices() || [];
+        };
+      } catch (e) { voicesCache = []; }
+    }
+
+    function pickVoice() {
+      if (!voicesCache.length) { primeVoices(); }
+      for (var i = 0; i < voicesCache.length; i++) {
+        if (voicesCache[i].lang && voicesCache[i].lang.indexOf('en') === 0) { return voicesCache[i]; }
+      }
+      return voicesCache[0] || null;
+    }
+
+    function ttsReady() {
+      return cueMode === 'device' && ('speechSynthesis' in window) && voicesCache.length > 0;
+    }
+
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) { return false; }
+      if (!voicesCache.length) { primeVoices(); }
+      if (!voicesCache.length) { return false; }
+      try {
+        window.speechSynthesis.cancel();
+        var u = new SpeechSynthesisUtterance(text);
+        var v = pickVoice();
+        if (v) { u.voice = v; u.lang = v.lang || 'en-US'; }
+        else { u.lang = 'en-US'; }
+        u.rate = 1.1;
+        u.pitch = 1;
+        u.volume = 1;
+        window.speechSynthesis.speak(u);
+        return true;
+      } catch (e) { return false; }
+    }
+
     function playCue(name) {
+      if (ttsReady() && SPEAK_TEXT[name]) {
+        if (speakText(SPEAK_TEXT[name])) { return; }
+      }
       if (!CUE_FILES[name]) { beepFor(name); return; }
       cueQueue.push(name);
       pumpCues();
     }
 
-    /* bonus only: dynamic sentences (exercise names) on desktops that actually have voices */
+    /* dynamic sentences (exercise names / progress) — device voice only */
     function speakExtra(text) {
-      if (!('speechSynthesis' in window)) { return; }
-      try {
-        var v = window.speechSynthesis.getVoices();
-        if (!v || v.length === 0) { return; }
-        var u = new SpeechSynthesisUtterance(text);
-        u.rate = 1.15;
-        window.speechSynthesis.speak(u);
-      } catch (e) {}
+      if (cueMode !== 'device') { return; }
+      speakText(text);
     }
 
     function playRadio() {
@@ -504,6 +561,7 @@
       prepSec = parseInt(document.getElementById('prepInput').value, 10) || 5;
       exBreakSec = parseInt(document.getElementById('exBreakInput').value, 10) || 10;
       autoStart = document.getElementById('autoStartSelect').value === 'yes';
+      cueMode = document.getElementById('voiceSelect').value === 'clips' ? 'clips' : 'device';
       if (!isRunning) { timeLeft = prepSec; currentPhase = 'PREP'; updateDisplay(); }
     }
 
@@ -559,6 +617,10 @@
     /* ---------- zero-click start: the whole session begins by itself on load ---------- */
     function boot() {
       initAudioContext();
+      primeVoices();
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.getVoices(); } catch (e) {}
+      }
       var radio = document.getElementById('bgRadio');
       try { radio.load(); } catch (e) {}
       var p = radio.play(); if (p && p.catch) { p.catch(function () {}); }
