@@ -483,6 +483,15 @@
     if (p === 'MANUAL_REST') { manualStart = Date.now(); manualPaused = 0; }
     manualUpShown = -1;
     render();
+    /* opening cue for the phase: PREP/LEAD start their 3-2-1 immediately, WORK and the
+       rest phases wait a beat so the transition word ("Rest"/"Change"/"Go") is not cut off */
+    if (p === 'PREP' || p === 'LEAD') {
+      setTimeout(function () { if (phase === p) { cueFor(seconds); } }, 120);
+    } else if (p === 'REST' || p === 'CHANGE') {
+      setTimeout(function () { if (phase === p) { cueFor(timeLeft); } }, 700);
+    } else if (p === 'WORK') {
+      setTimeout(function () { if (phase === 'WORK') { cueFor(timeLeft); } }, 500);
+    }
   }
   function secondsLeft() { var ms = endAt - Date.now(); return ms <= 0 ? 0 : Math.ceil(ms / 1000); }
 
@@ -496,7 +505,6 @@
     }
     isRunning = true;
     applyRadio();
-    if (phase === 'PREP' && timeLeft === prepSec) { sayText('Starting in three. Set, ready, go.'); }
     if (phase !== 'MANUAL_REST') { endAt = Date.now() + timeLeft * 1000; }
     else { manualStart = Date.now() - (manualPaused || 0); }
     clearInterval(timerId);
