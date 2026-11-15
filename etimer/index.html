@@ -1,399 +1,680 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout Interval Timer</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background-color: #0f172a; color: #f8fafc; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Workout Interval Timer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; background: #0f172a; color: #f8fafc; overflow: hidden; }
+  body { -webkit-user-select: none; user-select: none; touch-action: manipulation; }
 
-    .tv-wrapper {
-      width: 100vw; height: 100vh;
-      padding: clamp(6px, 1.6vh, 18px) clamp(10px, 2.4vw, 28px);
-      display: flex; align-items: center; justify-content: center; overflow: hidden;
-    }
+  .app {
+    width: 100%; height: 100vh; height: 100dvh;
+    display: flex; flex-direction: column;
+    padding: max(8px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+    gap: clamp(4px, 1.2vh, 12px);
+    align-items: center;
+    overflow: hidden;
+  }
+  .inner { width: 100%; max-width: 620px; height: 100%; display: flex; flex-direction: column; gap: clamp(4px, 1.1vh, 12px); }
 
-    .container {
-      width: 100%; height: 100%; max-width: 900px; max-height: 94vh;
-      background: #1e293b; padding: clamp(10px, 1.8vh, 20px);
-      border-radius: clamp(12px, 2vw, 24px);
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
-      display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-      position: relative;
-    }
+  .top-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-shrink: 0; }
+  .top-bar .title { font-size: clamp(0.6rem, 2.6vw, 0.8rem); letter-spacing: 1.5px; text-transform: uppercase; color: #94a3b8; font-weight: 700; }
+  .icon-btn {
+    flex: 0 0 auto; width: clamp(34px, 9vw, 42px); height: clamp(34px, 9vw, 42px);
+    display: flex; align-items: center; justify-content: center;
+    background: #334155; border: 1px solid #475569; border-radius: 10px;
+    color: #f8fafc; font-size: clamp(0.9rem, 4vw, 1.1rem); cursor: pointer; padding: 0;
+  }
+  .icon-btn[disabled] { opacity: 0.4; }
+  .top-right { display: flex; gap: 6px; }
 
-    .top-bar { width: 100%; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-    .settings-btn { background: #334155; color: #f8fafc; border: 1px solid #475569; padding: 8px 16px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-    .settings-btn:hover { background: #475569; }
-    h1 { font-size: clamp(0.85rem, 2vh, 1.2rem); color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; }
+  .status-badge {
+    align-self: center; padding: clamp(3px, 0.7vh, 8px) clamp(14px, 6vw, 30px); border-radius: 9999px;
+    font-weight: 800; font-size: clamp(0.85rem, 4.2vw, 1.35rem); text-transform: uppercase; letter-spacing: 1.5px; flex-shrink: 0;
+  }
+  .status-work { background: #10b981; color: #022c22; }
+  .status-rest { background: #f59e0b; color: #451a03; }
+  .status-change { background: #3b82f6; color: #eff6ff; }
+  .status-prep { background: #8b5cf6; color: #2e1065; }
+  .status-idle { background: #475569; color: #f8fafc; }
 
-    .status-badge {
-      display: inline-block; padding: 6px 28px; border-radius: 9999px; font-weight: 800;
-      font-size: clamp(1rem, 2.2vh, 1.5rem); text-transform: uppercase; letter-spacing: 1.5px;
-      transition: all 0.3s ease;
-    }
-    .status-work { background-color: #10b981; color: #022c22; }
-    .status-setbreak { background-color: #f59e0b; color: #451a03; }
-    .status-exbreak { background-color: #3b82f6; color: #1e3a8a; }
-    .status-prep { background-color: #8b5cf6; color: #2e1065; }
-    .status-idle { background-color: #475569; color: #f8fafc; }
+  .exercise-title {
+    text-align: center; font-weight: 800; color: #38bdf8; flex-shrink: 0;
+    font-size: clamp(0.95rem, 4.4vw, 1.5rem); line-height: 1.15;
+  }
 
-    .exercise-title { font-size: clamp(1.1rem, 2.5vh, 1.8rem); font-weight: 800; color: #38bdf8; text-align: center; }
+  .poses { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1 1 auto; min-height: 0; }
+  .pose {
+    background: #0f172a; border: 2px solid #334155; border-radius: 12px; padding: 6px 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; overflow: hidden; transition: border-color .25s, box-shadow .25s;
+  }
+  .pose.live { border-color: #10b981; box-shadow: 0 0 14px rgba(16,185,129,.45); }
+  .pose .lbl { font-size: clamp(0.5rem, 2.1vw, 0.68rem); text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; font-weight: 700; margin-bottom: 3px; }
+  .pose .txt { font-size: clamp(0.68rem, 3vw, 0.95rem); font-weight: 600; color: #e2e8f0; line-height: 1.25; }
 
-    /* Side-by-Side Dual Visual Cards Stage */
-    .visual-grid {
-      width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-      flex: 1 1 auto; max-height: 28vh; min-height: 120px;
-    }
-    .pose-card {
-      background: #0f172a; border-radius: 12px; border: 2px solid #334155;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 12px; position: relative; transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
-    }
-    .pose-card.active-pose { 
-      border-color: #10b981; 
-      box-shadow: 0 0 18px rgba(16, 185, 129, 0.4); 
-      transform: scale(1.02);
-    }
-    .pose-label { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; margin-bottom: 6px; font-weight: 700; letter-spacing: 1px; }
-    .pose-desc { font-size: clamp(0.85rem, 1.8vh, 1.05rem); font-weight: 600; color: #e2e8f0; text-align: center; line-height: 1.3; }
+  .timer { font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; text-align: center; flex-shrink: 0;
+           font-size: min(26vw, 17vh, 9rem); letter-spacing: 1px; }
+  .timer.rest-up { color: #fbbf24; }
 
-    .timer-display { font-size: clamp(3rem, 11vh, 6rem); font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1; }
+  .info-row { display: flex; justify-content: space-around; gap: 6px; flex-shrink: 0;
+              font-size: clamp(0.7rem, 3vw, 0.95rem); font-weight: 600; color: #cbd5e1;
+              background: #0f172a; border-radius: 10px; padding: clamp(3px, 0.7vh, 7px) 8px; }
 
-    .info-row {
-      width: 100%; display: flex; justify-content: space-around;
-      font-size: clamp(0.8rem, 1.8vh, 1.1rem); color: #cbd5e1; font-weight: 600;
-      background: #0f172a; padding: 8px; border-radius: 10px;
-    }
+  .hint { text-align: center; font-size: clamp(0.6rem, 2.7vw, 0.8rem); font-weight: 700; color: #fbbf24; flex-shrink: 0; min-height: 1em; }
 
-    .controls { width: 100%; display: flex; gap: 12px; }
-    button { flex: 1; padding: 12px; font-size: 1.1rem; font-weight: 700; border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.2s; }
-    button:active { opacity: 0.85; }
-    .btn-start { background-color: #10b981; color: #022c22; }
-    .btn-pause { background-color: #ef4444; color: #450a0a; }
-    .btn-reset { background-color: #475569; color: #f8fafc; }
+  .controls { display: flex; gap: 8px; flex-shrink: 0; }
+  .controls button {
+    flex: 1; border: none; border-radius: 12px; cursor: pointer; font-weight: 800;
+    padding: clamp(10px, 2.2vh, 16px) 4px; font-size: clamp(0.85rem, 3.6vw, 1.05rem);
+  }
+  .btn-start { background: #10b981; color: #022c22; }
+  .btn-pause { background: #ef4444; color: #450a0a; }
+  .btn-next { background: #38bdf8; color: #0f172a; }
+  .btn-reset { background: #475569; color: #f8fafc; }
 
-    /* Single-Tap Audio Unlock Overlay */
-    .sound-unlock-overlay {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.95); z-index: 80;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      border-radius: 24px; text-align: center; padding: 20px;
-    }
-    .sound-unlock-overlay button { background: #38bdf8; color: #0f172a; font-weight: 800; padding: 14px 28px; max-width: 280px; border-radius: 10px; }
+  .toast {
+    position: fixed; left: 50%; bottom: calc(14px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+    background: #f59e0b; color: #451a03; font-weight: 800; font-size: 0.75rem;
+    padding: 7px 14px; border-radius: 9999px; display: none; z-index: 300; max-width: 92vw; text-align: center;
+  }
+  .toast.show { display: block; }
 
-    /* Settings Modal */
-    .settings-modal {
-      display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.98); border-radius: 24px; padding: 20px; z-index: 100;
-      flex-direction: column; overflow-y: auto; text-align: left;
-    }
-    .settings-modal.active { display: flex; }
-    .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 15px; }
-    .input-group { display: flex; flex-direction: column; gap: 4px; }
-    .input-group label { font-size: 0.8rem; color: #cbd5e1; }
-    .input-group input, .input-group select { width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; text-align: center; }
-    
-    .ex-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 2fr 2fr auto; gap: 6px; margin-bottom: 8px; align-items: center; }
-    .ex-row input { padding: 6px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; font-size: 0.8rem; }
-    .ex-row input:not([type="text"]) { text-align: center; }
-  </style>
+  .sheet {
+    position: fixed; inset: 0; background: rgba(15,23,42,.99); z-index: 200;
+    display: none; flex-direction: column; padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+  }
+  .sheet.open { display: flex; }
+  .sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; flex-shrink: 0; }
+  .sheet-head h3 { font-size: 0.95rem; color: #38bdf8; letter-spacing: .5px; }
+  .sheet-body { flex: 1 1 auto; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 20px; }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .fld { display: flex; flex-direction: column; gap: 2px; }
+  .fld label { font-size: 0.62rem; color: #94a3b8; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; }
+  .fld input, .fld select {
+    width: 100%; padding: 7px 6px; border-radius: 8px; border: 1px solid #334155;
+    background: #1e293b; color: #fff; font-size: 0.85rem; text-align: center;
+  }
+  .fld input[type="text"] { text-align: left; }
+  .fld input:focus, .fld select:focus { outline: 2px solid #38bdf8; }
+
+  .sec-title { font-size: 0.78rem; color: #38bdf8; font-weight: 800; margin: 12px 0 6px; display: flex; justify-content: space-between; align-items: center; }
+  .sec-title button { flex: 0 0 auto; background: #38bdf8; color: #0f172a; border: none; border-radius: 8px; padding: 5px 10px; font-weight: 800; font-size: 0.72rem; }
+
+  .ex { border: 1px solid #334155; border-radius: 10px; padding: 8px; margin-bottom: 8px; background: #172033; }
+  .ex .ex-top { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-bottom: 6px; }
+  .ex .ex-nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
+  .ex .ex-poses { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .del { background: #ef4444; color: #fff; border: none; border-radius: 8px; font-weight: 800; padding: 0 12px; cursor: pointer; }
+  .tiny { font-size: 0.62rem; color: #94a3b8; line-height: 1.45; }
+</style>
 </head>
 <body>
 
-  <audio id="bgRadio" loop preload="auto">
-    <source id="radioSource" src="https://icecast.omny.fm/stream" type="audio/mpeg">
-  </audio>
+<audio id="radio" loop preload="none"><source id="radioSrc" src="https://stream.zeno.fm/f3wvbbqmdg8uv" type="audio/mpeg"></audio>
 
-  <div class="tv-wrapper">
-    <div class="container">
+<!-- silent looping clip: legacy browsers keep the screen awake while media plays -->
+<video id="keepAwake" playsinline muted loop preload="auto" style="position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-10px;top:-10px;"
+  src="data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc282aXNvMm1wNDEAAAK8bW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAfQAAAAAAAAQAAAQAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAb90cmFrAAAAXHRraGQAAAADAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAEBAAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAFbbWRpYQAAACBtZGhkAAAAAAAAAAAAAAAAAAAfQAAAAABVxAAAAAAALWhkbHIAAAAAAAAAAHNvdW4AAAAAAAAAAAAAAABTb3VuZEhhbmRsZXIAAAABBm1pbmYAAAAQc21oZAAAAAAAAAAAAAAAJGRpbmYAAAAcZHJlZgAAAAAAAAABAAAADHVybCAAAAABAAAAynN0YmwAAAB+c3RzZAAAAAAAAAABAAAAbm1wNGEAAAAAAAAAAQAAAAAAAAAAAAEAEAAAAAAfQAAAAAAANmVzZHMAAAAAA4CAgCUAAQAEgICAF0AVAAAAAAAfQAAAH0AFgICABRWIVuUABoCAgAECAAAAFGJ0cnQAAAAAAAAfQAAAH0AAAAAQc3R0cwAAAAAAAAAAAAAAEHN0c2MAAAAAAAAAAAAAABRzdHN6AAAAAAAAAAAAAAAAAAAAEHN0Y28AAAAAAAAAAAAAAChtdmV4AAAAIHRyZXgAAAAAAAAAAQAAAAEAAAAAAAAAAAAAAAAAAABhdWR0YQAAAFltZXRhAAAAAAAAACFoZGxyAAAAAAAAAABtZGlyYXBwbAAAAAAAAAAAAAAAACxpbHN0AAAAJKl0b28AAAAcZGF0YQAAAAEAAAAATGF2ZjYzLjEuMTAxAAAAtG1vb2YAAAAQbWZoZAAAAAAAAAABAAAAnHRyYWYAAAAkdGZoZAAAADkAAAABAAAAAAAAAtwAAAQAAAAAEwIAAAAAAAAUdGZkdAEAAAAAAAAAAAAAAAAAAFx0cnVuAAADAQAAAAkAAAC8AAAEAAAAABMAAAQAAAAABAAABAAAAAAEAAAEAAAAAAQAAAQAAAAABAAABAAAAAAEAAAEAAAAAAQAAAQAAAAABAAAA0AAAAAEAAAAO21kYXTcAExhdmM2My4xLjEwMQACMEAOARggBwEYIAcBGCAHARggBwEYIAcBGCAHARggBwEYIAcAAABDbWZyYQAAACt0ZnJhAQAAAAAAAAEAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAtwBAQEAAAAQbWZybwAAAAAAAABD"></video>
 
-      <!-- Single-Tap Unlock Overlay -->
-      <div id="unlockOverlay" class="sound-unlock-overlay">
-        <h2 style="margin-bottom: 12px; color: #38bdf8;">Workout Interval Timer</h2>
-        <p style="margin-bottom: 20px; color: #94a3b8; font-size: 0.95rem;">Tap below to unlock voice audio cues and background music.</p>
-        <button onclick="enableAudioAndStart()">Tap to Start Workout</button>
-      </div>
+<div class="app">
+  <div class="inner">
 
-      <div class="top-bar">
-        <button class="settings-btn" onclick="toggleSettings()">⚙️ Settings</button>
-        <h1>Workout Interval Timer</h1>
-        <div style="width:70px;"></div>
-      </div>
-
-      <div id="statusBadge" class="status-badge status-idle">Ready</div>
-      <div id="exerciseTitle" class="exercise-title">Straight Leg Raise (Right)</div>
-
-      <!-- Side-by-Side Dual Visual Cards -->
-      <div class="visual-grid">
-        <div id="poseStandard" class="pose-card">
-          <div class="pose-label">Standard / Start Position</div>
-          <div id="descStandard" class="pose-desc">Flat on mat, arms at sides</div>
-        </div>
-        <div id="poseLifted" class="pose-card">
-          <div class="pose-label">Lifted / Active Position</div>
-          <div id="descLifted" class="pose-desc">Lift right leg straight to 45°</div>
-        </div>
-      </div>
-
-      <div id="timerDisplay" class="timer-display">05</div>
-
-      <div class="info-row">
-        <span id="setInfo">Set: 1 / 10</span>
-        <span id="exInfo">Exercise: 1 / 11</span>
-      </div>
-
-      <div class="controls">
-        <button id="startBtn" class="btn-start" onclick="toggleTimer()">Start</button>
-        <button class="btn-reset" onclick="resetTimer()">Reset</button>
-      </div>
-
-      <!-- Settings Configuration Modal -->
-      <div id="settingsModal" class="settings-modal">
-        <button style="align-self: flex-end; background: #10b981; color: #022c22; padding: 8px 20px; margin-bottom: 12px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer;" onclick="saveAndCloseSettings()">Done & Save</button>
-        <h3 style="color: #38bdf8; margin-bottom: 10px;">Timer & Radio Config</h3>
-        <div class="grid-inputs">
-          <div class="input-group">
-            <label>Prep Time (sec):</label>
-            <input type="number" id="prepInput" value="5" onchange="updateGlobalTimings()">
-          </div>
-          <div class="input-group">
-            <label>Exercise Change Rest (sec):</label>
-            <input type="number" id="exBreakInput" value="10" onchange="updateGlobalTimings()">
-          </div>
-          <div class="input-group">
-            <label>Radio Station:</label>
-            <select id="radioSelect" onchange="changeRadioStation()">
-              <option value="https://icecast.omny.fm/stream" selected>High-Energy Workout</option>
-              <option value="https://stream.zeno.fm/f3wvbbqmdg8uv">Upbeat Cardio Beats</option>
-              <option value="https://ice1.somafm.com/u80s-128-mp3">Synthwave Energy</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label>Radio Toggle:</label>
-            <select id="radioToggle" onchange="toggleRadioState()">
-              <option value="on" selected>On</option>
-              <option value="off">Off</option>
-            </select>
-          </div>
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center; margin: 15px 0 10px;">
-          <h3 style="color: #38bdf8;">Exercises (Name, Work s, Rest s, Sets, Std Pose, Active Pose)</h3>
-          <button style="background: #38bdf8; color: #0f172a; padding: 6px 12px; font-weight: 800; border-radius: 6px; border: none; cursor: pointer;" onclick="addExerciseRow()">+ Add Exercise</button>
-        </div>
-        <div id="exerciseInputsContainer"></div>
-      </div>
-
+    <div class="top-bar">
+      <span class="title">Interval Timer</span>
+      <span class="top-right">
+        <button class="icon-btn" id="castBtn" onclick="castNow()" title="Cast / mirror">⧉</button>
+        <button class="icon-btn" onclick="toggleSheet()" title="Settings">⚙</button>
+      </span>
     </div>
+
+    <div id="badge" class="status-badge status-idle">Ready</div>
+    <div id="exTitle" class="exercise-title">&nbsp;</div>
+
+    <div class="poses">
+      <div id="poseA" class="pose">
+        <div class="lbl">Standard / Start</div>
+        <div id="poseATxt" class="txt">&nbsp;</div>
+      </div>
+      <div id="poseB" class="pose">
+        <div class="lbl">Active / Lifted</div>
+        <div id="poseBTxt" class="txt">&nbsp;</div>
+      </div>
+    </div>
+
+    <div id="timer" class="timer">03</div>
+
+    <div class="info-row">
+      <span id="setInfo">Set 1 / 10</span>
+      <span id="exInfo">Exercise 1 / 11</span>
+    </div>
+
+    <div id="hint" class="hint">&nbsp;</div>
+
+    <div class="controls">
+      <button id="startBtn" class="btn-start" onclick="toggleTimer()">Start</button>
+      <button id="nextBtn" class="btn-next" onclick="nextPhase()">Next</button>
+      <button class="btn-reset" onclick="resetTimer()">Reset</button>
+    </div>
+
   </div>
+</div>
 
-  <script>
-    var DEFAULT_EXERCISES = [
-      { name: "Straight Leg Raise (Right)", work: 5, break: 5, sets: 10, std: "Flat on mat, arms at sides", lift: "Lift right leg straight to 45°" },
-      { name: "Straight Leg Raise (Left)", work: 5, break: 5, sets: 10, std: "Flat on mat, arms at sides", lift: "Lift left leg straight to 45°" },
-      { name: "Hamstring Stretch (Right Leg)", work: 5, break: 5, sets: 10, std: "Standing tall upright", lift: "Heel elevated on platform, hinge forward" },
-      { name: "Hamstring Stretch (Left Leg)", work: 5, break: 5, sets: 10, std: "Standing tall upright", lift: "Heel elevated on platform, hinge forward" },
-      { name: "Standing Quad Stretch (Right)", work: 5, break: 5, sets: 10, std: "Standing balanced upright", lift: "Pull right ankle up to glutes" },
-      { name: "Standing Quad Stretch (Left)", work: 5, break: 5, sets: 10, std: "Standing balanced upright", lift: "Pull left ankle up to glutes" },
-      { name: "Cobra / Pelvic Press", work: 5, break: 5, sets: 10, std: "Prone flat on belly, chest down", lift: "Press up, arching lower back" },
-      { name: "Bird-Dog (Alternate)", work: 5, break: 5, sets: 10, std: "Hands and knees tabletop", lift: "Extend opposite arm and leg straight" },
-      { name: "Flutter Kicks (15cm height)", work: 5, break: 5, sets: 10, std: "Supine, feet hovering 1cm", lift: "Rapid micro-kicks up to 15cm height" },
-      { name: "Prone Leg Lift (Right)", work: 5, break: 5, sets: 10, std: "Prone flat on belly", lift: "Lift right leg upward off mat" },
-      { name: "Prone Leg Lift (Left)", work: 5, break: 5, sets: 10, std: "Prone flat on belly", lift: "Lift left leg upward off mat" }
-    ];
+<div id="toast" class="toast"></div>
 
-    var prepSec = 5;
-    var exBreakSec = 10;
-    var radioOn = true;
-    var audioUnlocked = false;
+<div id="sheet" class="sheet">
+  <div class="sheet-head">
+    <h3>Settings</h3>
+    <button class="icon-btn" onclick="toggleSheet()">✕</button>
+  </div>
+  <div class="sheet-body">
 
-    // Load saved routine or default to 5s work, 5s rest, 10 sets setup
-    var exerciseList = JSON.parse(localStorage.getItem('timer_exerciseList')) || DEFAULT_EXERCISES;
+    <div class="row2">
+      <div class="fld"><label>Prep (sec)</label><input type="number" id="prepInput" min="1" max="60" value="3" onchange="applySettings()"></div>
+      <div class="fld"><label>Rest mode</label>
+        <select id="restMode" onchange="applySettings()">
+          <option value="timed" selected>Timed</option>
+          <option value="manual">Manual (∞)</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="fld"><label>Rest between exercises (sec)</label><input type="number" id="exBreakInput" min="1" max="600" value="10" onchange="applySettings()"></div>
+      <div class="fld"><label>Auto-start on open</label>
+        <select id="autoStart" onchange="applySettings()">
+          <option value="yes" selected>Yes</option>
+          <option value="no">No</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="fld"><label>Voice</label>
+        <select id="voiceMode" onchange="applySettings()">
+          <option value="device" selected>Device voice</option>
+          <option value="clips">Recorded clips</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+      <div class="fld"><label>Music</label>
+        <select id="radioMode" onchange="applySettings()">
+          <option value="off" selected>Off</option>
+          <option value="https://stream.zeno.fm/f3wvbbqmdg8uv">Upbeat cardio</option>
+          <option value="https://ice1.somafm.com/u80s-128-mp3">Synthwave</option>
+          <option value="https://ice1.somafm.com/groovesalad-128-mp3">Chill lo-fi</option>
+        </select>
+      </div>
+    </div>
+    <div class="tiny" id="keephint">&nbsp;</div>
 
-    var currentPhase = 'PREP';
-    var currentSet = 1;
-    var currentEx = 1;
-    var timeLeft = prepSec;
-    var isRunning = false;
-    var timerId = null;
+    <div class="sec-title">Exercises <button onclick="addExercise()">+ Add</button></div>
+    <div id="exList"></div>
 
-    function saveToLocalStorage() {
-      localStorage.setItem('timer_exerciseList', JSON.stringify(exerciseList));
+    <div class="tiny">Cues — last 3 s before work: 3 “Set”, 2 “Ready”, 1 “Go”. Work counts 5-4-3-2-1, then “Rest”. Rest says nothing until its last 3 s. Manual (∞) rest: press Next when the clock shows the seconds you want (3-2-1 lead-in follows).</div>
+
+  </div>
+</div>
+
+<script>
+  var DEFAULT_EXERCISES = [
+    { name: "Straight Leg Raise (Right)", work: 5, break: 5, sets: 10, std: "Flat on mat, arms at sides", lift: "Lift right leg straight to 45 degrees" },
+    { name: "Straight Leg Raise (Left)", work: 5, break: 5, sets: 10, std: "Flat on mat, arms at sides", lift: "Lift left leg straight to 45 degrees" },
+    { name: "Hamstring Stretch (Right Leg)", work: 5, break: 5, sets: 10, std: "Standing tall, upright", lift: "Heel elevated, hinge forward" },
+    { name: "Hamstring Stretch (Left Leg)", work: 5, break: 5, sets: 10, std: "Standing tall, upright", lift: "Heel elevated, hinge forward" },
+    { name: "Standing Quad Stretch (Right)", work: 5, break: 5, sets: 10, std: "Standing balanced", lift: "Pull right ankle to glutes" },
+    { name: "Standing Quad Stretch (Left)", work: 5, break: 5, sets: 10, std: "Standing balanced", lift: "Pull left ankle to glutes" },
+    { name: "Cobra / Pelvic Press", work: 5, break: 5, sets: 10, std: "Prone flat, chest down", lift: "Press up, arch lower back" },
+    { name: "Bird-Dog (Alternate)", work: 5, break: 5, sets: 10, std: "Hands and knees tabletop", lift: "Extend opposite arm and leg" },
+    { name: "Flutter Kicks (15cm)", work: 5, break: 5, sets: 10, std: "Supine, feet hovering", lift: "Rapid micro-kicks to 15cm" },
+    { name: "Prone Leg Lift (Right)", work: 5, break: 5, sets: 10, std: "Prone flat on belly", lift: "Lift right leg off mat" },
+    { name: "Prone Leg Lift (Left)", work: 5, break: 5, sets: 10, std: "Prone flat on belly", lift: "Lift left leg off mat" }
+  ];
+
+  var prepSec = 3, exBreakSec = 10, restMode = 'timed', autoStart = true, voiceMode = 'device', radioSel = 'off';
+  var exerciseList = loadExercises();
+
+  var phase = 'PREP';        /* PREP | WORK | REST | CHANGE | LEAD | MANUAL_REST | DONE */
+  var currentSet = 1, currentEx = 1;
+  var timeLeft = prepSec, endAt = 0, manualStart = 0;
+  var isRunning = false, timerId = null, TICK_MS = 200;
+  var manualPaused = 0, manualUpShown = -1;
+  var cueLog = [];
+
+  /* ---------------- storage (phones block/corrupt localStorage; never trust it) ---------------- */
+  function loadExercises() {
+    var list = null;
+    try {
+      var raw = window.localStorage.getItem('timer_v8_config');
+      if (raw) { list = JSON.parse(raw).exercises; }
+    } catch (e) { list = null; }
+    if (!list || !list.length) { return DEFAULT_EXERCISES.slice(); }
+    for (var i = 0; i < list.length; i++) {
+      var e = list[i] || {};
+      list[i] = {
+        name: e.name || ('Exercise ' + (i + 1)),
+        work: parseInt(e.work, 10) || 5,
+        break: parseInt(e.break, 10) || 5,
+        sets: parseInt(e.sets, 10) || 10,
+        std: e.std || '', lift: e.lift || ''
+      };
     }
+    return list;
+  }
+  function saveAll() {
+    try {
+      window.localStorage.setItem('timer_v8_config', JSON.stringify({
+        exercises: exerciseList, prep: prepSec, exBreak: exBreakSec, restMode: restMode,
+        autoStart: autoStart, voice: voiceMode, radio: radioSel
+      }));
+    } catch (e) {}
+  }
 
-    function enableAudioAndStart() {
-      document.getElementById('unlockOverlay').style.display = 'none';
-      audioUnlocked = true;
-      if (radioOn) playRadio();
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        var u = new SpeechSynthesisUtterance("Audio enabled. Ready.");
-        window.speechSynthesis.speak(u);
-      }
-      toggleTimer();
-    }
+  /* ---------------- voice: device speech first (always present on phone/PC), clips second, beeps last ---------------- */
+  var SPEAK = { set:'Set', ready:'Ready', go:'Go', rest:'Rest', change:'Change position',
+                complete:'Workout complete. Well done', n1:'One', n2:'Two', n3:'Three', n4:'Four', n5:'Five' };
+  var clamp = '';
+  var CLIPS = { set:'prepare', ready:'position', go:'start', rest:'rest', change:'change',
+                complete:'complete', n1:'n1', n2:'n2', n3:'n3', n4:'n4', n5:'n5' };
+  var CLIP_BASE = 'audio/';
 
-    function playRadio() {
-      var radio = document.getElementById('bgRadio');
-      if (radio && radioOn && audioUnlocked) {
-        radio.play().catch(function(){});
-      }
-    }
+  var voices = [], clipAudio = null, clipQueue = [], clipBusy = false, clipBlocked = false;
+  var audioCtx = null;
 
-    function changeRadioStation() {
-      var radio = document.getElementById('bgRadio');
-      var source = document.getElementById('radioSource');
-      var selected = document.getElementById('radioSelect').value;
-      if (source.src !== selected) {
-        source.src = selected;
-        radio.load();
-        if (radioOn && audioUnlocked) radio.play().catch(function(){});
-      }
-    }
-
-    function toggleRadioState() {
-      radioOn = document.getElementById('radioToggle').value === 'on';
-      var radio = document.getElementById('bgRadio');
-      if (!radioOn) { radio.pause(); } else { playRadio(); }
-    }
-
-    function speak(text) {
-      if (!audioUnlocked || !('speechSynthesis' in window)) return;
+  function primeVoices() {
+    if (!('speechSynthesis' in window)) { return; }
+    try {
+      voices = window.speechSynthesis.getVoices() || [];
+      window.speechSynthesis.onvoiceschanged = function () { voices = window.speechSynthesis.getVoices() || []; };
+    } catch (e) { voices = []; }
+  }
+  function ttsReady() {
+    if (voiceMode !== 'device' || !('speechSynthesis' in window)) { return false; }
+    if (!voices.length) { primeVoices(); }
+    return voices.length > 0;
+  }
+  function speak(text) {
+    if (!ttsReady()) { return false; }
+    try {
       window.speechSynthesis.cancel();
-      var u = new SpeechSynthesisUtterance(text);
-      u.rate = 1.15;
+      var u = new SpeechSynthesisUtterance(text), v = null;
+      for (var i = 0; i < voices.length; i++) { if (voices[i].lang && voices[i].lang.indexOf('en') === 0) { v = voices[i]; break; } }
+      v = v || voices[0];
+      if (v) { u.voice = v; u.lang = v.lang || 'en-US'; } else { u.lang = 'en-US'; }
+      u.rate = 1.1; u.pitch = 1; u.volume = 1;
       window.speechSynthesis.speak(u);
-    }
+      return true;
+    } catch (e) { return false; }
+  }
+  function initCtx() {
+    if (!audioCtx) { var C = window.AudioContext || window.webkitAudioContext; if (C) { try { audioCtx = new C(); } catch (e) {} } }
+    if (audioCtx && audioCtx.state === 'suspended') { try { audioCtx.resume(); } catch (e) {} }
+  }
+  function beep(freq, dur, delay, type) {
+    initCtx();
+    if (!audioCtx) { return; }
+    setTimeout(function () {
+      try {
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.type = type || 'sine'; o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        g.gain.setValueAtTime(0.35, audioCtx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + dur);
+      } catch (e) {}
+    }, delay || 0);
+  }
+  function beepFor(name) {
+    if (name === 'go') { beep(880, .15, 0, 'triangle'); beep(1174, .2, 120, 'triangle'); }
+    else if (name === 'ready') { beep(587, .15, 0); beep(740, .2, 130); }
+    else if (name === 'set') { beep(440, .15, 0); }
+    else if (name === 'rest') { beep(440, .2, 0); beep(330, .25, 150); }
+    else if (name === 'complete') { beep(740, .15, 0); beep(880, .15, 150); beep(1174, .3, 300, 'triangle'); }
+    else { beep(700, .1, 0); }
+  }
+  function clip(name) {
+    var file = CLIPS[name];
+    if (!file) { beepFor(name); return; }
+    clipQueue.push(file);
+    pumpClips();
+  }
+  function pumpClips() {
+    if (clipBusy || clipQueue.length === 0) { return; }
+    if (!clipAudio) { clipAudio = new Audio(); clipAudio.preload = 'auto'; clipAudio.addEventListener('ended', function () { clipBusy = false; pumpClips(); }); clipAudio.addEventListener('error', function () { clipBusy = false; pumpClips(); }); }
+    var f = clipQueue[0];
+    clipBusy = true;
+    clipAudio.src = CLIP_BASE + f + '.mp3';
+    var p = clipAudio.play();
+    if (p && p.then) {
+      p.then(function () { clipQueue.shift(); }).catch(function () { clipBusy = false; clipQueue.length = 0; clipBlocked = true; toast('Tap anywhere once for sound'); });
+    } else { clipQueue.shift(); }
+  }
 
-    function updateDisplay() {
-      var badge = document.getElementById('statusBadge');
-      var timer = document.getElementById('timerDisplay');
-      var ex = exerciseList[currentEx - 1] || exerciseList[0];
+  function say(name) {           /* one entry point for every cue */
+    cueLog.push(name);
+    if (voiceMode === 'off') { return; }
+    if (ttsReady() && SPEAK[name] && speak(SPEAK[name])) { return; }
+    clip(name);
+  }
+  function sayText(text) {
+    if (voiceMode === 'device' && ttsReady()) { speak(text); }
+  }
 
-      document.getElementById('setInfo').innerText = 'Set: ' + currentSet + ' / ' + ex.sets;
-      document.getElementById('exInfo').innerText = 'Exercise: ' + currentEx + ' / ' + exerciseList.length;
-      document.getElementById('exerciseTitle').innerText = ex.name;
-      document.getElementById('descStandard').innerText = ex.std || "Standard posture";
-      document.getElementById('descLifted').innerText = ex.lift || "Active / Lifted pose";
-      timer.innerText = (timeLeft < 10 ? '0' : '') + timeLeft;
-
-      var poseStd = document.getElementById('poseStandard');
-      var poseLift = document.getElementById('poseLifted');
-
-      if (currentPhase === 'WORK') {
-        badge.innerText = 'WORK'; badge.className = 'status-badge status-work';
-        poseStd.className = 'pose-card';
-        poseLift.className = 'pose-card active-pose';
-      } else if (currentPhase === 'SET_BREAK') {
-        badge.innerText = 'REST'; badge.className = 'status-badge status-setbreak';
-        poseStd.className = 'pose-card active-pose';
-        poseLift.className = 'pose-card';
-      } else if (currentPhase === 'PREP') {
-        badge.innerText = 'PREPARE'; badge.className = 'status-badge status-prep';
-        poseStd.className = 'pose-card active-pose';
-        poseLift.className = 'pose-card';
-      } else if (currentPhase === 'EX_BREAK') {
-        badge.innerText = 'CHANGE POSITION'; badge.className = 'status-badge status-exbreak';
-        poseStd.className = 'pose-card active-pose';
-        poseLift.className = 'pose-card';
+  /* ---------------- screen wake: never let the phone lock mid-workout ---------------- */
+  var wakeLock = null;
+  function keepAwake() {
+    try {
+      if (navigator.wakeLock && navigator.wakeLock.request) {
+        navigator.wakeLock.request('screen').then(function (l) {
+          wakeLock = l;
+          l.addEventListener('release', function () { wakeLock = null; });
+          setKeepHint('Screen lock blocked (wake lock active).');
+        }).catch(function () { setKeepHint('Wake lock refused — keep this tab in front.'); });
+      } else { setKeepHint('This browser has no wake lock — keep the tab in front.'); }
+    } catch (e) {}
+    try {
+      var v = document.getElementById('keepAwake');
+      var p = v.play();
+      if (p && p.catch) { p.catch(function () {}); }
+    } catch (e) {}
+    try {
+      if (!audioCtx) { initCtx(); }
+      if (audioCtx) {                            /* inaudible keep-alive tone every few seconds */
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+        o.frequency.value = 12000; g.gain.value = 0.0008;
+        o.connect(g); g.connect(audioCtx.destination);
+        o.start(); o.stop(audioCtx.currentTime + 0.15);
       }
-    }
+    } catch (e) {}
+  }
+  function setKeepHint(t) { var el = document.getElementById('keephint'); if (el) { el.innerText = t; } }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { keepAwake(); resumeRadioIfRunning(); } });
 
-    function toggleTimer() {
-      var btn = document.getElementById('startBtn');
-      if (isRunning) {
-        clearInterval(timerId); isRunning = false; btn.innerText = 'Start'; btn.className = 'btn-start';
+  /* ---------------- music ---------------- */
+  function radioEl() { return document.getElementById('radio'); }
+  function applyRadio() {
+    var r = radioEl(), src = document.getElementById('radioSrc');
+    if (radioSel === 'off') { r.pause(); src.src = ''; return; }
+    if (src.src !== radioSel) { src.src = radioSel; try { r.load(); } catch (e) {} }
+    if (isRunning) { var p = r.play(); if (p && p.catch) { p.catch(function () {}); } }
+  }
+  function resumeRadioIfRunning() { applyRadio(); }
+
+  /* ---------------- cast (best effort: screen mirroring if the browser exposes remote playback) ---------------- */
+  function castNow() {
+    var r = radioEl();
+    if (r && r.remote && r.remote.prompt) {
+      r.remote.prompt().then(function () { toast('Sent to remote device'); }).catch(function () { toast('No cast device found'); });
+    } else if (window.PresentationRequest) {
+      try { new window.PresentationRequest(['/etimer/']).start().catch(function () { toast('No cast device found'); }); } catch (e) { toast('Use your phone’s Cast / Miracast menu'); }
+    } else {
+      toast('Use your phone’s Cast / AirPlay / Miracast menu');
+    }
+  }
+
+  /* ---------------- display ---------------- */
+  function fmt(t) {
+    if (t < 0) { t = 0; }
+    if (t >= 3600) { var h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60; return h + ':' + p2(m) + ':' + p2(s); }
+    if (t >= 60) { return Math.floor(t / 60) + ':' + p2(t % 60); }
+    return p2(t);
+  }
+  function p2(n) { return (n < 10 ? '0' : '') + n; }
+
+  function ex() { return exerciseList[currentEx - 1] || exerciseList[0]; }
+
+  function render() {
+    var e = ex(), badge = document.getElementById('badge'), timer = document.getElementById('timer');
+    document.getElementById('exTitle').innerText = e.name;
+    document.getElementById('poseATxt').innerText = e.std || 'Standard posture';
+    document.getElementById('poseBTxt').innerText = e.lift || 'Active posture';
+    document.getElementById('setInfo').innerText = 'Set ' + currentSet + ' / ' + e.sets;
+    document.getElementById('exInfo').innerText = 'Exercise ' + currentEx + ' / ' + exerciseList.length;
+
+    var cls = 'status-badge status-idle';
+    document.getElementById('poseA').className = 'pose' + (phase === 'WORK' ? '' : ' live');
+    document.getElementById('poseB').className = 'pose' + (phase === 'WORK' ? ' live' : '');
+
+    if (phase === 'WORK') { badge.innerText = 'Work'; cls = 'status-badge status-work'; }
+    else if (phase === 'REST') { badge.innerText = 'Rest'; cls = 'status-badge status-rest'; }
+    else if (phase === 'MANUAL_REST') { badge.innerText = 'Rest ∞'; cls = 'status-badge status-rest'; }
+    else if (phase === 'CHANGE') { badge.innerText = 'Change position'; cls = 'status-badge status-change'; }
+    else if (phase === 'PREP' || phase === 'LEAD') { badge.innerText = 'Get ready'; cls = 'status-badge status-prep'; }
+    else if (phase === 'DONE') { badge.innerText = 'Workout complete'; cls = 'status-badge status-idle'; }
+    badge.className = cls;
+
+    if (phase === 'MANUAL_REST') {
+      var up = Math.floor((Date.now() - manualStart) / 1000);
+      timer.innerText = fmt(up); timer.className = 'timer rest-up';
+      document.getElementById('hint').innerText = 'Press Next when ready (3-2-1 lead-in)';
+    } else {
+      timer.innerText = fmt(timeLeft); timer.className = 'timer';
+      document.getElementById('hint').innerHTML = '&nbsp;';
+    }
+    var btn = document.getElementById('startBtn');
+    btn.innerText = isRunning ? 'Pause' : 'Start';
+    btn.className = isRunning ? 'btn-pause' : 'btn-start';
+  }
+
+  /* ---------------- cue rules -------------------------------------------------
+     LEAD into work (PREP / REST / CHANGE / manual lead-in): last 3 s are
+       3 “Set” → 2 “Ready” → 1 “Go”, then work starts.  Never a bare “one”.
+     WORK: last 5 s count 5→1, then transition says “Rest” / “Change” / complete.
+     Timed REST/CHANGE: silent until the last 3 s, then Set/Ready/Go.
+     ------------------------------------------------------------------------- */
+  function cueFor(t) {
+    if (t <= 0) { return; }
+    if (phase === 'WORK') { if (t <= 5) { say('n' + t); } return; }
+    if (t === 3) { say('set'); }
+    else if (t === 2) { say('ready'); }
+    else if (t === 1) { say('go'); }
+  }
+
+  /* ---------------- engine: wall-clock based, cannot drift ---------------- */
+  function setPhase(p, seconds) {
+    phase = p; timeLeft = seconds;
+    endAt = (p === 'MANUAL_REST') ? 0 : Date.now() + seconds * 1000;
+    if (p === 'MANUAL_REST') { manualStart = Date.now(); manualPaused = 0; }
+    manualUpShown = -1;
+    render();
+  }
+  function secondsLeft() { var ms = endAt - Date.now(); return ms <= 0 ? 0 : Math.ceil(ms / 1000); }
+
+  function toggleTimer() {
+    initCtx(); keepAwake();
+    if (isRunning) {
+      if (phase === 'MANUAL_REST') { manualPaused = Date.now() - manualStart; }
+      else { timeLeft = secondsLeft(); }
+      clearInterval(timerId); isRunning = false;
+      radioEl().pause(); render(); return;
+    }
+    isRunning = true;
+    applyRadio();
+    if (phase === 'PREP' && timeLeft === prepSec) { sayText('Starting in three. Set, ready, go.'); }
+    if (phase !== 'MANUAL_REST') { endAt = Date.now() + timeLeft * 1000; }
+    else { manualStart = Date.now() - (manualPaused || 0); }
+    clearInterval(timerId);
+    timerId = setInterval(tick, TICK_MS);
+    render();
+  }
+
+  function tick() {
+    if (phase === 'MANUAL_REST') {
+      var up = Math.floor((Date.now() - manualStart) / 1000);
+      if (up !== manualUpShown) { manualUpShown = up; render(); }
+      return;
+    }
+    var t = secondsLeft();
+    if (t !== timeLeft) { timeLeft = t; cueFor(t); render(); }
+    if (t <= 0) { advance(); }
+  }
+
+  function startWork(e) {
+    setPhase('WORK', e.work);      /* the lead-in already said "Go" on the final second */
+  }
+
+  function advance() {
+    var e = ex();
+    if (phase === 'PREP' || phase === 'LEAD') {
+      startWork(e);
+    } else if (phase === 'REST') {
+      currentSet++; startWork(e);
+    } else if (phase === 'CHANGE') {
+      currentEx++; currentSet = 1; startWork(ex());
+    } else if (phase === 'WORK') {
+      if (currentSet < e.sets) {
+        if (restMode === 'manual') { setPhase('MANUAL_REST', 0); say('rest'); }
+        else { setPhase('REST', e.break); say('rest'); }
+      } else if (currentEx < exerciseList.length) {
+        setPhase('CHANGE', exBreakSec); say('change');
+        sayText('Exercise ' + currentEx + ' of ' + exerciseList.length + ' done. Change position.');
       } else {
-        isRunning = true; btn.innerText = 'Pause'; btn.className = 'btn-pause';
-        if (currentPhase === 'PREP' && timeLeft === prepSec) {
-          speak("Set position. Ready.");
-        }
-        timerId = setInterval(tick, 1000);
+        finish();
       }
     }
+    render();
+  }
 
-    function tick() {
-      var ex = exerciseList[currentEx - 1] || exerciseList[0];
-      if (timeLeft > 1) {
-        timeLeft--;
-        if (timeLeft <= 5) speak(String(timeLeft));
-      } else {
-        if (currentPhase === 'PREP') {
-          currentPhase = 'WORK'; timeLeft = ex.work; speak("Start");
-        } else if (currentPhase === 'WORK') {
-          if (currentSet < ex.sets) {
-            currentPhase = 'SET_BREAK'; timeLeft = ex.break; speak("Rest");
-          } else if (currentEx < exerciseList.length) {
-            speak("Exercise " + currentEx + " of " + exerciseList.length + " completed. Change position.");
-            currentPhase = 'EX_BREAK'; timeLeft = exBreakSec;
-          } else {
-            clearInterval(timerId); isRunning = false;
-            document.getElementById('statusBadge').innerText = 'WORKOUT COMPLETE';
-            speak("Workout complete. Great job!");
-            return;
-          }
-        } else if (currentPhase === 'SET_BREAK') {
-          currentSet++; currentPhase = 'WORK'; timeLeft = ex.work; speak("Start");
-        } else if (currentPhase === 'EX_BREAK') {
-          currentEx++; currentSet = 1; currentPhase = 'WORK';
-          timeLeft = exerciseList[currentEx - 1].work; speak("Start");
-        }
-      }
-      updateDisplay();
+  /* Next button: begin the 3-2-1 lead-in, or skip the current work interval */
+  function nextPhase() {
+    initCtx(); keepAwake();
+    if (phase === 'MANUAL_REST' || phase === 'REST') {
+      currentSet++;
+      setPhase('LEAD', 3);
+    } else if (phase === 'CHANGE') {
+      currentEx++; currentSet = 1;
+      setPhase('LEAD', 3);
+    } else if (phase === 'WORK') {
+      advance(); return;
+    } else if (phase === 'PREP') {
+      startWork(ex());
+    } else if (phase === 'DONE') {
+      resetTimer(); return;
+    } else if (phase === 'LEAD') {
+      endAt = Date.now();                     /* double-tap skips the lead-in */
     }
+    if (!isRunning) { isRunning = true; }
+    clearInterval(timerId); timerId = setInterval(tick, TICK_MS);
+    render();
+  }
 
-    function resetTimer() {
-      clearInterval(timerId); isRunning = false; currentPhase = 'PREP';
-      currentSet = 1; currentEx = 1; timeLeft = prepSec;
-      document.getElementById('startBtn').innerText = 'Start';
-      document.getElementById('startBtn').className = 'btn-start';
-      updateDisplay();
+  function finish() {
+    clearInterval(timerId); isRunning = false;
+    setPhase('DONE', 0); say('complete');
+    var p = document.getElementById('poseA'), q = document.getElementById('poseB');
+    p.className = 'pose'; q.className = 'pose';
+    radioEl().pause(); render();
+  }
+
+  function resetTimer() {
+    clearInterval(timerId); isRunning = false;
+    currentSet = 1; currentEx = 1;
+    setPhase('PREP', prepSec);
+    render();
+  }
+
+  /* ---------------- settings ---------------- */
+  function applySettings() {
+    prepSec = parseInt(document.getElementById('prepInput').value, 10) || 3;
+    exBreakSec = parseInt(document.getElementById('exBreakInput').value, 10) || 10;
+    restMode = document.getElementById('restMode').value === 'manual' ? 'manual' : 'timed';
+    autoStart = document.getElementById('autoStart').value === 'yes';
+    voiceMode = document.getElementById('voiceMode').value;
+    radioSel = document.getElementById('radioMode').value;
+    saveAll(); applyRadio();
+    if (!isRunning && (phase === 'PREP' || phase === 'DONE')) { setPhase('PREP', prepSec); }
+    toast('Saved');
+  }
+  function toggleSheet() {
+    var s = document.getElementById('sheet');
+    if (s.className.indexOf('open') === -1) { renderExList(); s.className = 'sheet open'; } else { saveAll(); s.className = 'sheet'; }
+  }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+  function renderExList() {
+    var box = document.getElementById('exList');
+    box.innerHTML = '';
+    for (var i = 0; i < exerciseList.length; i++) {
+      var e = exerciseList[i];
+      var d = document.createElement('div');
+      d.className = 'ex';
+      d.innerHTML =
+        '<div class="ex-top">' +
+          '<input type="text" value="' + esc(e.name) + '" onchange="setField(' + i + ',\'name\',this.value,false)">' +
+          '<button class="del" onclick="delExercise(' + i + ')">✕</button>' +
+        '</div>' +
+        '<div class="ex-nums">' +
+          '<div class="fld"><label>Work s</label><input type="number" value="' + esc(e.work) + '" min="1" onchange="setField(' + i + ',\'work\',this.value,true)"></div>' +
+          '<div class="fld"><label>Rest s</label><input type="number" value="' + esc(e.break) + '" min="1" onchange="setField(' + i + ',\'break\',this.value,true)"></div>' +
+          '<div class="fld"><label>Sets</label><input type="number" value="' + esc(e.sets) + '" min="1" onchange="setField(' + i + ',\'sets\',this.value,true)"></div>' +
+        '</div>' +
+        '<div class="ex-poses">' +
+          '<div class="fld"><label>Start pose</label><input type="text" value="' + esc(e.std) + '" onchange="setField(' + i + ',\'std\',this.value,false)"></div>' +
+          '<div class="fld"><label>Active pose</label><input type="text" value="' + esc(e.lift) + '" onchange="setField(' + i + ',\'lift\',this.value,false)"></div>' +
+        '</div>';
+      box.appendChild(d);
     }
+  }
+  function setField(i, f, v, num) { exerciseList[i][f] = num ? (parseInt(v, 10) || 1) : v; saveAll(); render(); }
+  function addExercise() { exerciseList.push({ name: 'New Exercise', work: 5, break: 5, sets: 10, std: 'Start posture', lift: 'Active posture' }); renderExList(); saveAll(); }
+  function delExercise(i) { exerciseList.splice(i, 1); if (!exerciseList.length) { exerciseList = DEFAULT_EXERCISES.slice(); } renderExList(); saveAll(); render(); }
 
-    function toggleSettings() {
-      document.getElementById('settingsModal').classList.toggle('active');
-    }
+  var toastTimer = null;
+  function toast(msg) {
+    var t = document.getElementById('toast');
+    t.innerText = msg; t.className = 'toast show';
+    if (toastTimer) { clearTimeout(toastTimer); }
+    toastTimer = setTimeout(function () { t.className = 'toast'; }, 5000);
+  }
 
-    function updateGlobalTimings() {
-      prepSec = parseInt(document.getElementById('prepInput').value, 10) || 5;
-      exBreakSec = parseInt(document.getElementById('exBreakInput').value, 10) || 10;
-    }
+  /* ---------------- boot: zero taps needed ---------------- */
+  function restoreSettingsToUI() {
+    try {
+      var raw = window.localStorage.getItem('timer_v8_config');
+      if (!raw) { return; }
+      var c = JSON.parse(raw);
+      if (c.prep) { prepSec = parseInt(c.prep, 10) || 3; }
+      if (c.exBreak) { exBreakSec = parseInt(c.exBreak, 10) || 10; }
+      if (c.restMode) { restMode = c.restMode; }
+      if (typeof c.autoStart === 'boolean') { autoStart = c.autoStart; }
+      if (c.voice) { voiceMode = c.voice; }
+      if (c.radio) { radioSel = c.radio; }
+    } catch (e) {}
+    document.getElementById('prepInput').value = prepSec;
+    document.getElementById('exBreakInput').value = exBreakSec;
+    document.getElementById('restMode').value = restMode;
+    document.getElementById('autoStart').value = autoStart ? 'yes' : 'no';
+    document.getElementById('voiceMode').value = voiceMode;
+    document.getElementById('radioMode').value = radioSel;
+  }
 
-    function addExerciseRow() {
-      exerciseList.push({ name: "New Exercise", work: 5, break: 5, sets: 10, std: "Standard posture", lift: "Active posture" });
-      renderSettings();
-      saveToLocalStorage();
-    }
+  function boot() {
+    initCtx(); primeVoices(); keepAwake();
+    restoreSettingsToUI();
+    setPhase('PREP', prepSec);
+    applyRadio();
+    if (autoStart) { toggleTimer(); } else { render(); }
+    setInterval(function () {                      /* undoes any lock/autoplay block without a tap */
+      if (isRunning) { keepAwake(); applyRadio(); if (clipBlocked) { clipBlocked = false; pumpClips(); } }
+    }, 3000);
+  }
 
-    function renderSettings() {
-      var c = document.getElementById('exerciseInputsContainer');
-      c.innerHTML = '';
-      exerciseList.forEach(function(ex, i) {
-        var row = document.createElement('div');
-        row.className = 'ex-row';
-        row.innerHTML = `
-          <input type="text" value="${ex.name}" onchange="exerciseList[${i}].name=this.value;saveToLocalStorage();" placeholder="Name">
-          <input type="number" value="${ex.work}" onchange="exerciseList[${i}].work=parseInt(this.value)||1;saveToLocalStorage();" title="Work (s)">
-          <input type="number" value="${ex.break}" onchange="exerciseList[${i}].break=parseInt(this.value)||0;saveToLocalStorage();" title="Rest (s)">
-          <input type="number" value="${ex.sets}" onchange="exerciseList[${i}].sets=parseInt(this.value)||1;saveToLocalStorage();" title="Sets">
-          <input type="text" value="${ex.std || ''}" onchange="exerciseList[${i}].std=this.value;saveToLocalStorage();" placeholder="Standard Pose">
-          <input type="text" value="${ex.lift || ''}" onchange="exerciseList[${i}].lift=this.value;saveToLocalStorage();" placeholder="Active Pose">
-          <button style="background:#ef4444; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-weight:bold; cursor:pointer;" onclick="exerciseList.splice(${i},1);renderSettings();saveToLocalStorage();">✕</button>
-        `;
-        c.appendChild(row);
-      });
-    }
-
-    function saveAndCloseSettings() {
-      saveToLocalStorage();
-      toggleSettings();
-      updateDisplay();
-    }
-
-    renderSettings();
-    updateDisplay();
-  </script>
+  window.addEventListener('load', function () { setTimeout(boot, 20); });
+  window.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible' && isRunning) { keepAwake(); } });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === ' ' || e.key === 'Enter') { nextPhase(); }
+    if (e.key === 'p' || e.key === 'P') { toggleTimer(); }
+  });
+  document.addEventListener('click', function () {                       /* first tap anywhere restores sound */
+    initCtx(); keepAwake();
+    if (clipBlocked) { clipBlocked = false; pumpClips(); }
+    resumeRadioIfRunning();
+  }, true);
+</script>
 </body>
 </html>
