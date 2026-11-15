@@ -110,6 +110,11 @@
   .sec-title button { flex: 0 0 auto; background: #38bdf8; color: #0f172a; border: none; border-radius: 8px; padding: 5px 10px; font-weight: 800; font-size: 0.72rem; }
 
   .ex { border: 1px solid #334155; border-radius: 10px; padding: 8px; margin-bottom: 8px; background: #172033; }
+  .ex input[type="text"] {
+    width: 100%; padding: 8px 7px; border-radius: 8px; border: 1px solid #334155;
+    background: #1e293b; color: #fff; font-size: 0.82rem; font-weight: 600;
+  }
+  .ex input[type="text"]:focus { outline: 2px solid #38bdf8; }
   .ex .ex-top { display: grid; grid-template-columns: 1fr auto; gap: 6px; margin-bottom: 6px; }
   .ex .ex-nums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px; }
   .ex .ex-poses { display: grid; grid-template-columns: 1fr; gap: 6px; }
@@ -168,7 +173,7 @@
   </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast" onclick="this.className='toast'"></div>
 
 <div id="sheet" class="sheet">
   <div class="sheet-head">
