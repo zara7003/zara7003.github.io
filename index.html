@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sahil Shaikh — The Journey Begins</title>
-  <meta name="description" content="Personal space of Sahil Shaikh. Exploring tech, building tools, and sharing the journey." />
+  <title>Sahil Shaikh — Business Development &amp; Immersive Technology</title>
+  <meta name="description" content="Sahil Shaikh — business development, tenders and contracts, and immersive technology (AR/VR/XR/AI). Located at GMT+3. Free, private browser tools built and hosted in-house." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
@@ -654,6 +654,49 @@
       padding-bottom: 24px;
     }
 
+    /* ─── EXPERIENCE LIST ─────────────────────────────── */
+    .xp {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin: 4px 0 24px;
+    }
+    .xp-item {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      gap: 18px;
+      padding-left: 16px;
+      border-left: 1px solid var(--border);
+    }
+    .xp-when {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--gold-dim);
+      letter-spacing: 0.06em;
+      padding-top: 3px;
+    }
+    .xp-role {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: -0.01em;
+    }
+    .xp-industry {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--gold-dim);
+      margin-top: 3px;
+    }
+    .xp-desc {
+      display: block;
+      font-size: 0.83rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 7px;
+    }
+
     /* ─── REVEAL ANIMATIONS ───────────────────────────── */
     .reveal {
       opacity: 0;
@@ -729,13 +772,13 @@
 
   <!-- HERO -->
   <section id="hero">
-    <div class="hero-eyebrow">Personal Space · Est. 2025</div>
+    <div class="hero-eyebrow">Located at GMT+3 · Business Development &amp; Immersive Technology</div>
     <h1 class="hero-name">Sahil<br><span class="gold">Shaikh.</span></h1>
     <div class="hero-tagline" id="typewriter"><span class="cursor"></span></div>
     <p class="hero-desc">
-      Welcome to my little corner of the internet. This is the <strong>start of the journey</strong> — 
-      a personal space today, a hub of self-hosted tools and experiments tomorrow.
-      Built from scratch, hosted on my own hardware, growing one commit at a time.
+      Business development and immersive technology — AR/VR/XR, AI, events and tenders.
+      This is my corner of the internet: a short introduction to what I do,
+      and a growing set of <strong>free, private tools</strong> built and hosted on my own hardware.
     </p>
     <div class="hero-actions">
       <a href="#tools" class="btn-primary">Explore Tools ↓</a>
@@ -757,7 +800,8 @@
       <span class="marquee-item">Proxmox</span>
       <span class="marquee-item">Cloudflare Zero Trust</span>
       <span class="marquee-item">Open Source</span>
-      <span class="marquee-item">Qatar</span>
+      <span class="marquee-item">Tenders &amp; Contracts</span>
+      <span class="marquee-item">GMT+3</span>
       <span class="marquee-item">Immersive Tech</span>
       <span class="marquee-item">Tools Hub</span>
       <span class="marquee-item">Always Building</span>
@@ -765,7 +809,8 @@
       <span class="marquee-item">Proxmox</span>
       <span class="marquee-item">Cloudflare Zero Trust</span>
       <span class="marquee-item">Open Source</span>
-      <span class="marquee-item">Qatar</span>
+      <span class="marquee-item">Tenders &amp; Contracts</span>
+      <span class="marquee-item">GMT+3</span>
       <span class="marquee-item">Immersive Tech</span>
       <span class="marquee-item">Tools Hub</span>
       <span class="marquee-item">Always Building</span>
@@ -777,49 +822,93 @@
     <div class="section-label">About me</div>
     <div class="about-grid">
       <div class="about-left">
-        <h2 class="about-title">Tech enthusiast,<br><span class="gold">builder by nature.</span></h2>
+        <h2 class="about-title">Business development,<br><span class="gold">immersive technology.</span></h2>
         <div class="about-tags">
           <span class="tag">Business Development</span>
-          <span class="tag">Immersive Tech</span>
+          <span class="tag">Tenders &amp; Contracts</span>
+          <span class="tag">Procurement</span>
+          <span class="tag">Immersive Tech · AR/VR/XR/AI</span>
+          <span class="tag">Events &amp; Activations</span>
+          <span class="tag">E-commerce</span>
           <span class="tag">Self-Hosting</span>
-          <span class="tag">Home Server</span>
-          <span class="tag">Qatar</span>
-          <span class="tag">VR / XR</span>
-          <span class="tag">Cloudflare</span>
-          <span class="tag">Networking</span>
+          <span class="tag">GMT+3</span>
           <span class="tag">Always Learning</span>
         </div>
       </div>
       <div class="about-body">
         <p>
-          Based in <strong>Doha, Qatar</strong>, I work at the crossroads of technology and business — 
-          helping organizations deploy immersive experiences, simulations, and smart spaces 
-          that actually change how people learn, train, and interact.
+          I work where business meets emerging technology — helping organisations put immersive
+          experiences, simulations and smart spaces to work in ways that change how people learn,
+          train and sell. Five years across <strong>business development</strong>, tenders and
+          contracts, procurement, events and e-commerce, largely in Qatar and the Gulf.
+        </p>
+
+        <div class="xp">
+          <div class="xp-item">
+            <div class="xp-when">2024 — 2026</div>
+            <div>
+              <span class="xp-role">Business Development Consultant</span>
+              <span class="xp-industry">Immersive technology (AR/VR/XR/AI), events &amp; government tenders</span>
+              <span class="xp-desc">Two years owning the full tender lifecycle — expression of interest through to award — plus drafting and reviewing contracts (NDAs, MOUs, subcontracts, SOPs), supplier sourcing and negotiation.</span>
+            </div>
+          </div>
+          <div class="xp-item">
+            <div class="xp-when">2025</div>
+            <div>
+              <span class="xp-role">Assistant Project Manager — Formula 1 Qatar Grand Prix 2025</span>
+              <span class="xp-industry">Pre-event technology activation · won through an independent tender</span>
+              <span class="xp-desc">Carried the technology scope of a pre-event activation from tender win through to live delivery on site.</span>
+            </div>
+          </div>
+          <div class="xp-item">
+            <div class="xp-when">2022 — 2024</div>
+            <div>
+              <span class="xp-role">Business Development Manager</span>
+              <span class="xp-industry">B2B distribution — FMCG &amp; consumer electronics accessories</span>
+              <span class="xp-desc">Opened 70+ e-commerce and retail channels for imported brands, negotiated sole-distributor agreements and cut supply costs by around 30%.</span>
+            </div>
+          </div>
+          <div class="xp-item">
+            <div class="xp-when">2021 — 2024</div>
+            <div>
+              <span class="xp-role">Co-Founder &amp; General Manager</span>
+              <span class="xp-industry">E-commerce start-up — online retail &amp; distribution</span>
+              <span class="xp-desc">Built an online retail business to 30+ brands and 10,000+ SKUs, breaking even within three months.</span>
+            </div>
+          </div>
+          <div class="xp-item">
+            <div class="xp-when">Earlier</div>
+            <div>
+              <span class="xp-role">Export sales · smart-home project sales</span>
+              <span class="xp-industry">Field sales &amp; project coordination</span>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          Outside work I run a <strong>home server on Proxmox</strong> and build the free browser tools
+          linked below — a personal hello to the world, and the home of everything I make.
         </p>
         <p>
-          Outside of work, I'm the kind of person who runs a <strong>home server on Proxmox</strong>, 
-          obsesses over clean subdomain routing, and builds personal tools just to scratch an itch. 
-          This website is both: a personal hello to the world, and the foundation of something bigger.
-        </p>
-        <p>
-          More tools, experiments, and projects are on their way. This is <strong>chapter one</strong>.
+          Full CV, references and project detail on request —
+          <a href="mailto:mailsahil7003@gmail.com"><strong>get in touch</strong></a>.
         </p>
         <div class="about-stats">
           <div class="stat-card reveal">
-            <div class="stat-num">∞</div>
-            <div class="stat-label">Projects in my head</div>
+            <div class="stat-num">5+</div>
+            <div class="stat-label">Years across tech &amp; business</div>
           </div>
           <div class="stat-card reveal reveal-delay-1">
-            <div class="stat-num">1</div>
-            <div class="stat-label">Server to host them all</div>
+            <div class="stat-num">2</div>
+            <div class="stat-label">Years leading tenders end to end</div>
           </div>
           <div class="stat-card reveal reveal-delay-2">
-            <div class="stat-num">24/7</div>
-            <div class="stat-label">Uptime (on a good day)</div>
+            <div class="stat-num">27</div>
+            <div class="stat-label">Free browser tools, live now</div>
           </div>
           <div class="stat-card reveal reveal-delay-3">
-            <div class="stat-num">v1</div>
-            <div class="stat-label">Website · The beginning</div>
+            <div class="stat-num">GMT+3</div>
+            <div class="stat-label">Where you'll find me</div>
           </div>
         </div>
       </div>
@@ -832,89 +921,115 @@
       <div class="section-label">Tools &amp; Apps</div>
       <div class="tools-header">
         <h2 class="tools-title">Self-hosted,<br><span class="gold">by me. For everyone.</span></h2>
-        <p class="tools-subtitle">Running on my own hardware in Doha. No subscriptions, no third-party. Just tools that work.</p>
+        <p class="tools-subtitle">Free, private, running in your browser. No sign-up, no uploads — built and hosted by me.</p>
       </div>
 
       <div class="tools-grid">
 
-        <!-- LIVE EXAMPLE — replace href with your real subdomain -->
-        <a href="https://qr.sahilshaikh.org" class="tool-card live reveal" target="_blank" rel="noopener">
-          <div class="tool-icon">⬛</div>
+        <!-- LIVE TOOLS -->
+        <a href="https://sahilshaikh.org/etimer/" class="tool-card live reveal" target="_blank" rel="noopener">
+          <div class="tool-icon">⏱</div>
           <div>
-            <div class="tool-name">QR Code Generator</div>
-            <div class="tool-desc">Generate clean QR codes for any URL, text, or contact. No ads, no watermark, no tracking.</div>
+            <div class="tool-name">Exercise &amp; Workout Timer</div>
+            <div class="tool-desc">Build a routine — named exercises, reps and rest — then run it hands-free with audio cues. Suits exercise, rehab and physio sessions.</div>
           </div>
           <div class="tool-footer">
             <span class="tool-status status-live">● Live</span>
-            <span class="tool-subdomain">qr.sahilshaikh.org</span>
+            <span class="tool-subdomain">sahilshaikh.org/etimer</span>
           </div>
           <span class="tool-arrow">↗</span>
         </a>
 
-        <div class="tool-card reveal reveal-delay-1">
-          <div class="tool-icon">🖼</div>
+        <a href="https://tools.sahilshaikh.org" class="tool-card live reveal reveal-delay-1" target="_blank" rel="noopener">
+          <div class="tool-icon">🧰</div>
           <div>
-            <div class="tool-name">Background Remover</div>
-            <div class="tool-desc">AI-powered background removal. Upload your image, get a clean PNG back. Runs fully on my server.</div>
+            <div class="tool-name">Tools Hub</div>
+            <div class="tool-desc">27 free browser tools in one place — PDFs, images, QR codes, converters, calculators, invoice and petty-cash helpers.</div>
           </div>
           <div class="tool-footer">
-            <span class="tool-status status-soon">⏳ Coming Soon</span>
-            <span class="tool-subdomain">bg.sahilshaikh.org</span>
+            <span class="tool-status status-live">● Live</span>
+            <span class="tool-subdomain">tools.sahilshaikh.org</span>
           </div>
-          <span class="tool-lock">🔒</span>
-        </div>
+          <span class="tool-arrow">↗</span>
+        </a>
 
-        <div class="tool-card reveal reveal-delay-2">
+        <a href="https://tools.sahilshaikh.org/qr-generator/" class="tool-card live reveal reveal-delay-2" target="_blank" rel="noopener">
+          <div class="tool-icon">⬛</div>
+          <div>
+            <div class="tool-name">QR Code Generator</div>
+            <div class="tool-desc">Clean QR codes for any link or text — colours, logo or centre text. No ads, no watermark, no tracking.</div>
+          </div>
+          <div class="tool-footer">
+            <span class="tool-status status-live">● Live</span>
+            <span class="tool-subdomain">tools.sahilshaikh.org/qr-generator</span>
+          </div>
+          <span class="tool-arrow">↗</span>
+        </a>
+
+        <a href="https://tools.sahilshaikh.org/pdf-toolkit/" class="tool-card live reveal" target="_blank" rel="noopener">
           <div class="tool-icon">📄</div>
           <div>
             <div class="tool-name">PDF Toolkit</div>
-            <div class="tool-desc">Merge, split, compress, and convert PDFs. All processing happens server-side — your files stay private.</div>
+            <div class="tool-desc">Merge, reorder, rotate and delete pages, then download a fresh PDF. Runs entirely in your browser.</div>
           </div>
           <div class="tool-footer">
-            <span class="tool-status status-soon">⏳ Coming Soon</span>
-            <span class="tool-subdomain">pdf.sahilshaikh.org</span>
+            <span class="tool-status status-live">● Live</span>
+            <span class="tool-subdomain">tools.sahilshaikh.org/pdf-toolkit</span>
           </div>
-          <span class="tool-lock">🔒</span>
-        </div>
+          <span class="tool-arrow">↗</span>
+        </a>
 
-        <div class="tool-card reveal">
+        <a href="https://tools.sahilshaikh.org/background-remover/" class="tool-card live reveal reveal-delay-1" target="_blank" rel="noopener">
+          <div class="tool-icon">🖼</div>
+          <div>
+            <div class="tool-name">Background Remover</div>
+            <div class="tool-desc">Cut the background out of a photo. The AI model runs on your own device — nothing is uploaded.</div>
+          </div>
+          <div class="tool-footer">
+            <span class="tool-status status-live">● Live</span>
+            <span class="tool-subdomain">tools.sahilshaikh.org/background-remover</span>
+          </div>
+          <span class="tool-arrow">↗</span>
+        </a>
+
+        <a href="https://tools.sahilshaikh.org/image-compressor/" class="tool-card live reveal reveal-delay-2" target="_blank" rel="noopener">
           <div class="tool-icon">🎨</div>
           <div>
-            <div class="tool-name">Image Tools</div>
-            <div class="tool-desc">Resize, convert, compress. WebP, JPEG, PNG — batch processing without uploading to some random site.</div>
+            <div class="tool-name">Image Compressor</div>
+            <div class="tool-desc">Shrink and resize a single image or a whole batch, and download the lot as a zip.</div>
           </div>
           <div class="tool-footer">
-            <span class="tool-status status-soon">⏳ Coming Soon</span>
-            <span class="tool-subdomain">img.sahilshaikh.org</span>
+            <span class="tool-status status-live">● Live</span>
+            <span class="tool-subdomain">tools.sahilshaikh.org/image-compressor</span>
           </div>
-          <span class="tool-lock">🔒</span>
-        </div>
+          <span class="tool-arrow">↗</span>
+        </a>
 
-        <div class="tool-card reveal reveal-delay-1">
-          <div class="tool-icon">🔐</div>
+        <a href="https://tools.sahilshaikh.org/timers-studio/" class="tool-card live reveal" target="_blank" rel="noopener">
+          <div class="tool-icon">⏳</div>
           <div>
-            <div class="tool-name">Password Generator</div>
-            <div class="tool-desc">Strong, random passwords generated entirely in your browser. Nothing ever leaves your device.</div>
+            <div class="tool-name">Timers Studio</div>
+            <div class="tool-desc">Pomodoro, stopwatch with laps, and countdown — together in one place.</div>
           </div>
           <div class="tool-footer">
-            <span class="tool-status status-planned">📋 Planned</span>
-            <span class="tool-subdomain">pass.sahilshaikh.org</span>
+            <span class="tool-status status-live">● Live</span>
+            <span class="tool-subdomain">tools.sahilshaikh.org/timers-studio</span>
           </div>
-          <span class="tool-lock">🔒</span>
-        </div>
+          <span class="tool-arrow">↗</span>
+        </a>
 
-        <div class="tool-card reveal reveal-delay-2">
-          <div class="tool-icon">📦</div>
+        <a href="https://tools.sahilshaikh.org" class="tool-card live reveal reveal-delay-1" target="_blank" rel="noopener">
+          <div class="tool-icon">✨</div>
           <div>
-            <div class="tool-name">More Coming…</div>
-            <div class="tool-desc">New tools added regularly. Suggestions welcome — if it's useful and I can self-host it, it'll probably appear here.</div>
+            <div class="tool-name">See all 27 tools</div>
+            <div class="tool-desc">The full index — filter by category. All free, all private, and growing.</div>
           </div>
           <div class="tool-footer">
-            <span class="tool-status status-planned">✨ Always Growing</span>
-            <span class="tool-subdomain">sahilshaikh.org</span>
+            <span class="tool-status status-live">● Live</span>
+            <span class="tool-subdomain">tools.sahilshaikh.org</span>
           </div>
-          <span class="tool-lock">🔒</span>
-        </div>
+          <span class="tool-arrow">↗</span>
+        </a>
 
       </div>
     </div>
@@ -932,22 +1047,22 @@
         <div class="timeline-item active">
           <div class="timeline-date">2025 · The beginning</div>
           <div class="timeline-title">🚀 sahilshaikh.org goes live</div>
-          <div class="timeline-desc">A personal website, self-hosted on Proxmox at home, served via Cloudflare Tunnel. The very first chapter.</div>
+          <div class="timeline-desc">A personal website on my own domain, built from scratch — the first chapter.</div>
+        </div>
+        <div class="timeline-item active">
+          <div class="timeline-date">Now · Tools live</div>
+          <div class="timeline-title">🧰 tools.sahilshaikh.org</div>
+          <div class="timeline-desc">Free browser tools — PDFs, images, QR codes, converters, calculators. No sign-up, nothing leaves your device.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Soon</div>
-          <div class="timeline-title">🛠 First tools launch</div>
-          <div class="timeline-desc">QR generator, PDF toolkit, and background remover go live on their own subdomains.</div>
+          <div class="timeline-date">Next · More tools</div>
+          <div class="timeline-title">🏋 Physio &amp; rehab routines</div>
+          <div class="timeline-desc">Extending the exercise timer with guided rehab routines — sets, holds and rest, called out by voice.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Later</div>
-          <div class="timeline-title">📝 Notes &amp; Blog</div>
-          <div class="timeline-desc">Writing about self-hosting, immersive tech, and whatever else is on my mind. Maybe even a newsletter.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-date">Eventually</div>
-          <div class="timeline-title">🌐 Open to the world</div>
-          <div class="timeline-desc">A proper tools hub, fully public, fully free, running on hardware I own. No clouds required (well, except Cloudflare).</div>
+          <div class="timeline-date">Next</div>
+          <div class="timeline-title">📝 Notes &amp; writing</div>
+          <div class="timeline-desc">Short pieces on immersive tech, tenders, and self-hosting a small piece of the internet.</div>
         </div>
       </div>
     </div>
@@ -960,12 +1075,13 @@
   <div class="footer-inner">
     <div>
       <div class="footer-logo">Sahil<span>.</span></div>
-      <div class="footer-tagline">// always building · doha, qatar</div>
+      <div class="footer-tagline">// always building · gmt+3</div>
     </div>
     <div class="footer-links">
       <a href="mailto:mailsahil7003@gmail.com">Email</a>
-      <a href="https://linkedin.com/in/sahilshaikh" target="_blank">LinkedIn</a>
-      <a href="https://github.com/sahilshaikh" target="_blank">GitHub</a>
+      <a href="https://linkedin.com/in/sahilshaikh99" target="_blank">LinkedIn</a>
+      <a href="https://github.com/zara7003" target="_blank">GitHub</a>
+      <a href="https://tools.sahilshaikh.org" target="_blank">Tools</a>
       <a href="/privacy/">Privacy</a>
     </div>
   </div>
@@ -1047,10 +1163,10 @@
   (function () {
     const el = document.getElementById('typewriter');
     const phrases = [
-      'BD Executive by day.',
+      'Business development by day.',
       'Homelab tinkerer by night.',
+      'Immersive tech, real projects.',
       'Always building something.',
-      'Qatar\'s corner of the internet.',
       'Self-hosted. Self-made.'
     ];
     let pi = 0, ci = 0, deleting = false, wait = 0;
