@@ -136,6 +136,7 @@
     <div class="top-bar">
       <span class="title">Interval Timer</span>
       <span class="top-right">
+        <button class="icon-btn" onclick="toggleAbout()" title="About this timer">ⓘ</button>
         <button class="icon-btn" id="castBtn" onclick="castNow()" title="Cast / mirror">⧉</button>
         <button class="icon-btn" onclick="toggleSheet()" title="Settings">⚙</button>
       </span>
@@ -689,5 +690,59 @@
     resumeRadioIfRunning();
   }, true);
 </script>
+
+<!-- ─── ABOUT / STORY ─── -->
+<div id="aboutSheet" class="sheet">
+  <div class="sheet-head">
+    <h3>About this timer</h3>
+    <button class="icon-btn" onclick="toggleAbout()">✕</button>
+  </div>
+  <div class="sheet-body">
+    <p class="about-p">
+      I built this for my own physiotherapy. Every exercise came with its own rules — how long to hold,
+      how many reps, how long to rest before the next one — and counting that in my head, or juggling a
+      stopwatch with a sheet of paper on the floor, made the routine harder than the recovery itself.
+    </p>
+    <p class="about-p">
+      So I made it easy for myself: the timer names the exercise, counts the sets, announces every
+      transition, and calls the next movement out loud, so I never have to look at the screen while I'm
+      lying down mid-exercise.
+    </p>
+    <p class="about-p">
+      People doing physio alongside me had the same problem, so I shared it. Every routine is adjustable
+      to exactly what <em>your</em> physiotherapist prescribed — hold times, rest intervals, number of
+      exercises, sets and reps — and you can save your own list so the next session starts with one tap.
+    </p>
+    <p class="about-p">
+      It runs entirely in your browser. No account, no sign-up, nothing uploaded, nothing tracked.
+      Your routines live in this device's local storage only.
+    </p>
+    <p class="about-links">
+      <a href="https://sahilshaikh.org/">← sahilshaikh.org</a>
+      <a href="https://tools.sahilshaikh.org/">More of my tools ↗</a>
+    </p>
+    <p class="about-fine">
+      One of a set of small tools I build for myself whenever I hit a need or a privacy worry — vibe
+      coded with AI, hosted on my own server, shared for free. Not medical advice: follow your
+      physiotherapist's plan.
+    </p>
+  </div>
+</div>
+
+<style>
+  .about-p { font-size: 0.88rem; line-height: 1.75; color: #cbd5e1; margin: 0 0 14px; }
+  .about-links { display: flex; flex-wrap: wrap; gap: 16px; margin: 18px 0 14px; }
+  .about-links a { color: #38bdf8; font-size: 0.85rem; text-decoration: none; border-bottom: 1px solid rgba(56,189,248,.35); padding-bottom: 2px; }
+  .about-links a:hover { color: #7dd3fc; }
+  .about-fine { font-size: 0.72rem; line-height: 1.7; color: #64748b; border-top: 1px solid rgba(148,163,184,.18); padding-top: 12px; margin: 0; }
+</style>
+<script>
+  function toggleAbout() {
+    var a = document.getElementById('aboutSheet');
+    var open = a.className.indexOf('open') !== -1;
+    a.className = open ? 'sheet' : 'sheet open';
+  }
+</script>
+
 </body>
 </html>
